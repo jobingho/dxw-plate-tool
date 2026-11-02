@@ -78,6 +78,19 @@
   .hint{background:#eef4ff;border:1px solid #d4e2ff;border-radius:8px;padding:11px;font-size:12px;color:#33558c;line-height:1.6;}
   img.thumb{width:54px;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--line);}
   .cap-preview{max-width:100%;border-radius:10px;border:1px solid var(--line);margin-top:8px;}
+  /* 自编逐位输入 */
+  .intent-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
+  .intent-tab{flex:1;min-width:56px;padding:8px 4px;font-size:12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--sub);cursor:pointer;}
+  .intent-tab.on{border-color:var(--red);color:var(--red);font-weight:700;background:#fff4f4;}
+  .intent-tab.filled{color:var(--txt);}
+  .slot-row{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:12px 0;}
+  .slot{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;font-family:"Courier New",monospace;border:2px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;}
+  .slot.active{border-color:var(--red);box-shadow:0 0 0 3px rgba(198,40,40,.15);}
+  .slot.filled{border-color:var(--blue);color:var(--txt);}
+  .kb{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px;}
+  .kb-key{padding:13px 0;font-size:16px;font-weight:700;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:var(--txt);}
+  .kb-key:active{background:#eef0f3;}
+  .kb-fn{background:#eef0f3;color:var(--sub);}
 </style>
 </head>
 <body>
@@ -142,11 +155,13 @@
         <div class="muted">自编剩余机会：<b id="cLeft">20</b> 次</div>
         <div class="muted">已锁定：<b id="cLocked">—</b></div>
       </div>
-      <label>本批可录入 1–5 个心仪号（按优先级，系统依次查重，首个可用即锁定）</label>
-      <div class="two" id="customInputs"></div>
+      <div class="hint" style="margin:8px 0">逐位输入 6 位（前缀 <b>粤AD</b> 已固定）。仅可用 <b>数字 0-9</b> 与 <b>字母（不含 I、O）</b>，且至少含 <b>1 位数字</b>。请按车管所公布的号段格式自编，勿随意编排。</div>
+      <div class="intent-tabs" id="intentTabs"></div>
+      <div class="slot-row" id="slotRow"></div>
+      <div class="kb" id="kb"></div>
       <div class="row" style="margin-top:10px">
         <button class="btn" id="cSubmit">验证本批</button>
-        <button class="btn ghost" id="cRand">随机塞一个示例</button>
+        <button class="btn ghost" id="cRand">随机填一个</button>
       </div>
       <div id="cResult" class="muted" style="margin-top:8px"></div>
     </div>
@@ -378,25 +393,59 @@ $$('#phaseSeg button').forEach(b=>b.onclick=()=>{
 });
 
 /* 选号模拟：自编 */
-let C=store.get('dxw_custom',{left:20,locked:null,log:[]});
+let C=store.get('dxw_custom',{left:20,locked:null,log:[],intents:['','','','','']});
+if(!C.intents)C.intents=['','','','',''];
+let activeRow=0,activeCol=0;
+const KB=CHARS;
 function renderCustom(){
   $('#cLeft').textContent=C.left;$('#cLocked').textContent=C.locked?fullPlate(C.locked):'—';
-  if(!$('#customInputs').children.length){
-    for(let i=0;i<5;i++){const inp=document.createElement('input');inp.placeholder='如 '+randSuffix();inp.maxLength=6;inp.dataset.idx=i;$('#customInputs').appendChild(inp);}
-  }
+  const tabs=$('#intentTabs');tabs.innerHTML='';
+  C.intents.forEach((s,i)=>{
+    const b=document.createElement('button');b.className='intent-tab'+(i===activeRow?' on':'')+(s?' filled':'');
+    b.textContent='意向'+(i+1)+(s?'：'+s:'');
+    b.onclick=()=>{activeRow=i;activeCol=Math.min(activeCol,(C.intents[i]||'').length);renderCustom();};
+    tabs.appendChild(b);
+  });
+  const row=$('#slotRow');row.innerHTML='';
+  const s=C.intents[activeRow]||'';
+  for(let j=0;j<6;j++){const d=document.createElement('div');d.className='slot'+(j===activeCol?' active':'')+(s[j]?' filled':'');d.textContent=s[j]||'';d.onclick=()=>{activeCol=j;renderCustom();};row.appendChild(d);}
+  const kb=$('#kb');kb.innerHTML='';
+  KB.split('').forEach(c=>{const b=document.createElement('button');b.className='kb-key';b.textContent=c;b.onclick=()=>typeChar(c);kb.appendChild(b);});
+  const del=document.createElement('button');del.className='kb-key kb-fn';del.textContent='⌫';del.onclick=typeDel;kb.appendChild(del);
+  const clr=document.createElement('button');clr.className='kb-key kb-fn';clr.textContent='清除';clr.onclick=typeClear;kb.appendChild(clr);
   $('#cLog').innerHTML=C.log.length?C.log.map(l=>`<div class="fav-item"><span class="plate">${fullPlate(l.suf)}</span><span class="badge ${l.ok?'b-you':'b-yiban'}">${l.ok?'可用·已锁':'已占用'}</span></div>`).join(''):'<div class="muted">暂无记录</div>';
 }
+function typeChar(c){
+  let s=C.intents[activeRow]||'';
+  if(s.length>=6)return;
+  const arr=s.split('');
+  if(activeCol>=arr.length)arr.push(c);else arr.splice(activeCol,0,c);
+  C.intents[activeRow]=arr.join('').slice(0,6);
+  activeCol=Math.min(6,activeCol+1);
+  store.set('dxw_custom',C);renderCustom();
+}
+function typeDel(){
+  let s=C.intents[activeRow]||'';
+  if(!s.length){activeCol=0;return;}
+  const arr=s.split('');
+  if(activeCol>=arr.length){arr.pop();activeCol=Math.max(0,arr.length-1);}
+  else{arr.splice(activeCol,1);}
+  C.intents[activeRow]=arr.join('');
+  store.set('dxw_custom',C);renderCustom();
+}
+function typeClear(){C.intents[activeRow]='';activeCol=0;store.set('dxw_custom',C);renderCustom();}
 $('#cSubmit').onclick=()=>{
   if(C.left<=0){toast('自编机会已用完');return;}
-  const vals=$$('#customInputs input').map(i=>i.value.trim().toUpperCase()).filter(Boolean);
-  if(!vals.length){toast('请输入至少一个号码');return;}
+  const filled=C.intents.map(s=>(s||'').trim().toUpperCase()).filter(s=>s.length>0);
+  if(!filled.length){toast('请先输入至少一个号码');return;}
+  const bad=[];
+  C.intents.forEach((s,i)=>{const v=(s||'');if(v&&v.length<6)bad.push('意向'+(i+1)+'未满6位');if(v&&!/[0-9]/.test(v))bad.push('意向'+(i+1)+'须含至少1位数字');});
+  if(bad.length){$('#cResult').innerHTML='<span class="pill red">'+bad.join('；')+'</span>';toast('格式不合规：'+bad[0]);return;}
   let locked=null,occupied=[];
-  vals.forEach(v=>{
-    const suf=v.replace(/[^0-9A-Z]/g,'').slice(0,6);
-    const sc=scorePlate(suf);
+  filled.forEach(v=>{
     const avail=Math.random()>0.55; // 模拟查重：约45%概率可用
-    if(avail&&!locked){locked=suf;C.log.unshift({suf,ok:true});}
-    else{C.log.unshift({suf,ok:false});occupied.push(fullPlate(suf));}
+    if(avail&&!locked){locked=v;C.log.unshift({suf:v,ok:true});}
+    else{C.log.unshift({suf:v,ok:false});occupied.push(fullPlate(v));}
   });
   C.left--;
   if(locked){C.locked=locked;S.final={suf:locked,phase:'custom'};store.set(SKey,S);}
@@ -404,7 +453,7 @@ $('#cSubmit').onclick=()=>{
   $('#cResult').innerHTML=locked?`<span class="pill green">🎉 锁定 ${fullPlate(locked)}（${scorePlate(locked).tier}）</span>`:`<span class="pill red">本批全部被占用，消耗1次机会</span>`+(occupied.length?`<div class="muted" style="margin-top:4px">已占用：${occupied.join('、')}</div>`:'');
   renderCustom();
 };
-$('#cRand').onclick=()=>{const inp=$$('#customInputs input').find(i=>!i.value);if(inp)inp.value=randSuffix();};
+$('#cRand').onclick=()=>{C.intents[activeRow]=randSuffix();activeCol=6;store.set('dxw_custom',C);renderCustom();toast('已随机填入 意向'+(activeRow+1));};
 
 /* 结果/收藏 */
 function showFinal(){$('#finalPlate').textContent=S.final?fullPlate(S.final.suf)+'（'+scorePlate(S.final.suf).tier+'）':'尚未选定号牌';}
