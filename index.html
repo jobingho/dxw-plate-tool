@@ -693,10 +693,28 @@ function updateRisk(){
   const risks=[];
   if(pick&&veh){const m=mi(pick)-mi(veh);if(m>=6)risks.push(['warn','库存车风险：车辆生产至提车已 '+m+' 个月（≥6 个月需关注）']);else risks.push(['ok','车辆库存时长 '+m+' 个月，正常']);}
   if(mile){if(mile>200)risks.push(['warn','里程异常：'+mile+'km，疑似调表/运损（新车通常<80km）']);else if(mile>80)risks.push(['warn','里程偏高：'+mile+'km，建议核实']);else risks.push(['ok','里程 '+mile+'km，属新车正常区间']);}
-  if(veh){tires.forEach((t,i)=>{if(mi(t.date)>mi(veh))risks.push(['warn','轮胎'+(i+1)+'生产日期('+fmtYM(t.date)+')晚于整车生产，疑似更换']);});
-  glasses.forEach((g,i)=>{if(g.monthKnown&&mi(g.date)>mi(veh))risks.push(['warn','玻璃'+(i+1)+'生产日期('+fmtYM(g.date)+')晚于整车生产，疑似更换']);});}
+  if(veh){
+    if(tires.length){
+      const late=tires.map((t,i)=>mi(t.date)>mi(veh)?(i+1):0).filter(Boolean);
+      const tmin=fmtYM(new Date(Math.min(...tires.map(t=>mi(t.date)))));
+      const tmax=fmtYM(new Date(Math.max(...tires.map(t=>mi(t.date)))));
+      if(late.length)risks.push(['warn','轮胎'+late.join('/')+'生产日期晚于整车生产('+fmtYM(veh)+')，疑似更换']);
+      else risks.push(['ok','轮胎'+tires.length+'条：'+tmin+(tmin!==tmax?'~'+tmax:'')+'，均早于整车('+fmtYM(veh)+')，正常']);
+    }
+    if(glasses.length){
+      const cmp=g=>g.monthKnown?mi(g.date):g.date.getFullYear()*12;
+      const vals=glasses.map(cmp);
+      const late=glasses.map((g,i)=>vals[i]>mi(veh)?(i+1):0).filter(Boolean);
+      const lab=g=>g.monthKnown?fmtYM(g.date):g.date.getFullYear()+'年(月份不详)';
+      const gi=vals.indexOf(Math.min(...vals)),gj=vals.indexOf(Math.max(...vals));
+      const gmin=lab(glasses[gi]),gmax=lab(glasses[gj]);
+      const unk=glasses.some(g=>!g.monthKnown);
+      if(late.length)risks.push(['warn','玻璃'+late.join('/')+'生产日期晚于整车生产('+fmtYM(veh)+')，疑似更换'+(unk?'（含月份不详项，按年份判定）':'')]);
+      else risks.push(['ok','玻璃'+glasses.length+'块：'+gmin+(gmin!==gmax?'~'+gmax:'')+'，均早于整车('+fmtYM(veh)+')，正常'+(unk?'（部分月份不详，按年份判定）':'')]);
+    }
+  }
   const known=[...tires,...glasses].filter(x=>x.monthKnown).map(x=>mi(x.date));
-  if(known.length>=2){const span=Math.max(...known)-Math.min(...known);if(span>3)risks.push(['warn','玻璃/轮胎生产日期跨度 '+span+' 个月，一致性存疑']);}
+  if(known.length>=2){const span=Math.max(...known)-Math.min(...known);if(span>3)risks.push(['warn','轮胎/玻璃生产日期跨度 '+span+' 个月，一致性存疑']);else risks.push(['ok','轮胎/玻璃生产日期一致性良好（跨度 '+span+' 个月）']);}
   if(bat&&veh&&mi(bat)<mi(veh))risks.push(['ok','电池生产早于整车，合理']);
   const box=$('#kRisk');
   if(!risks.length){box.innerHTML='<div class="muted">填写上方日期/里程后自动判定。</div>';return;}
