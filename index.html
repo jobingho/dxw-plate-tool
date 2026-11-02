@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>广州新能源上牌·选号·验车 三合一工具</title>
+<style>
+  :root{
+    --red:#e23b3b; --red-d:#c62828; --gold:#e0a82e; --green:#1f9d55;
+    --bg:#f5f6f8; --card:#ffffff; --line:#e3e6ea; --txt:#1f2733; --sub:#6b7585;
+    --blue:#2f6fed;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);font-size:15px;}
+  header{background:linear-gradient(135deg,var(--red),var(--red-d));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 14px;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.5px;}
+  header p{margin:4px 0 0;font-size:11px;opacity:.85;}
+  .tabs{display:flex;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:15;}
+  .tab{flex:1;text-align:center;padding:13px 4px;font-size:14px;color:var(--sub);font-weight:600;cursor:pointer;border-bottom:3px solid transparent;}
+  .tab.active{color:var(--red);border-bottom-color:var(--red);}
+  .page{display:none;padding:14px;max-width:760px;margin:0 auto;padding-bottom:calc(20px + env(safe-area-inset-bottom));}
+  .page.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .card h3{margin:0 0 10px;font-size:15px;display:flex;align-items:center;gap:6px;}
+  .btn{display:inline-block;background:var(--red);color:#fff;border:none;border-radius:9px;padding:12px 18px;min-height:44px;font-size:15px;font-weight:600;cursor:pointer;transition:.15s;line-height:1.1;}
+  .btn:active{transform:scale(.97);}
+  .btn.ghost{background:#fff;color:var(--red);border:1px solid var(--red);}
+  .btn.blue{background:var(--blue);}
+  .btn.gray{background:#eef0f3;color:var(--sub);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .grid{display:grid;gap:10px;}
+  input,select,textarea{font-family:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--txt);width:100%;}
+  label{font-size:13px;color:var(--sub);display:block;margin:8px 0 4px;}
+  .plate{font-family:"Courier New",monospace;font-weight:700;letter-spacing:1px;}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff;}
+  .b-jipin{background:linear-gradient(135deg,#e0a82e,#c62828);}
+  .b-you{background:var(--red);}
+  .b-putong{background:#f0a93b;}
+  .b-yiban{background:#9aa3b0;}
+  .muted{color:var(--sub);font-size:12px;}
+  .timer{font-size:26px;font-weight:800;color:var(--red);text-align:center;font-variant-numeric:tabular-nums;}
+  .plate-card{border:1px solid var(--line);border-radius:10px;padding:11px;display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;}
+  .plate-card.best{border:2px solid var(--gold);box-shadow:0 0 0 3px rgba(224,168,46,.18);}
+  .plate-num{font-size:18px;}
+  .score{font-size:12px;color:var(--sub);}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .seg button{flex:1;border:none;background:#fff;padding:12px;font-size:14px;color:var(--sub);cursor:pointer;min-height:44px;}
+  .seg button.on{background:var(--red);color:#fff;font-weight:700;}
+  .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+  .modal-mask.show{display:flex;}
+  .modal{background:#fff;border-radius:14px;padding:18px;width:100%;max-width:380px;max-height:80vh;overflow:auto;}
+  .toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(31,39,51,.92);color:#fff;padding:11px 18px;border-radius:24px;font-size:13px;z-index:99;opacity:0;transition:.25s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);}
+  .check-item:last-child{border-bottom:none;}
+  .check-item input[type=checkbox]{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--green);}
+  .ci-body{flex:1;}
+  .ci-title{font-size:14px;font-weight:600;}
+  .ci-desc{font-size:12px;color:var(--sub);margin-top:2px;line-height:1.5;}
+  .ci-actions{display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap;}
+  .mini-btn{font-size:12px;padding:7px 12px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--sub);cursor:pointer;min-height:34px;}
+  .mini-btn.on{background:var(--green);color:#fff;border-color:var(--green);}
+  .cat-title{font-size:14px;font-weight:800;color:var(--red);margin:14px 0 6px;padding-left:8px;border-left:4px solid var(--red);}
+  .risk{background:#fff4f4;border:1px solid #f3c9c9;border-radius:10px;padding:12px;margin-top:10px;}
+  .risk.ok{background:#f1faf4;border-color:#bfe6cd;}
+  .risk.warn{background:#fff8ec;border-color:#f3dca8;}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:6px;background:#eef0f3;color:var(--sub);margin:2px;}
+  .pill.red{background:#fdeaea;color:var(--red);}
+  .pill.green{background:#eafaf0;color:var(--green);}
+  .pill.gold{background:#fbf2dc;color:#b5861f;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:480px){.two{grid-template-columns:1fr;}.timer{font-size:22px;}.page{padding-left:12px;padding-right:12px;}}
+  .fav-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);}
+  .slider-row{display:flex;align-items:center;gap:8px;margin:8px 0;}
+  .slider-row input[type=range]{flex:1;height:26px;}
+  .slider-row span{font-size:12px;color:var(--sub);width:42px;text-align:right;}
+  .hint{background:#eef4ff;border:1px solid #d4e2ff;border-radius:8px;padding:11px;font-size:12px;color:#33558c;line-height:1.6;}
+  img.thumb{width:54px;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--line);}
+  .cap-preview{max-width:100%;border-radius:10px;border:1px solid var(--line);margin-top:8px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>广州新能源 · 上牌选号 · 验车 三合一</h1>
+  <p>纯电粤AD · 离线可用 · 手机电脑通用 · 数据仅存本机</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="sel">① 选号模拟</div>
+  <div class="tab" data-tab="ocr">② 拍照识号</div>
+  <div class="tab" data-tab="ins">③ 验车帮手</div>
+</div>
+
+<!-- ===================== 选号模拟 ===================== -->
+<div class="page active" id="page-sel">
+  <div class="card">
+    <h3>🎯 选号模拟（复刻 12123 线上流程）</h3>
+    <div class="seg" id="phaseSeg">
+      <button data-phase="random" class="on">随机选号</button>
+      <button data-phase="custom">自编选号</button>
+    </div>
+    <div class="hint" style="margin-top:10px">
+      随机选号：5 次机会，每次系统出 <b>10 个</b> 号、限时 <b>180 秒</b>，选 1 个或跳过；未选出则进入自编。自编：最多 <b>20 次</b> 编拟机会，逐批查重。每个号实时标注优质度。
+    </div>
+  </div>
+
+  <!-- 开始选号引导 -->
+  <div id="startBox" class="card" style="text-align:center">
+    <h3 style="justify-content:center">🎯 准备开始选号</h3>
+    <div class="muted" style="margin:6px 0 16px;line-height:1.8">随机选号：5 次机会，每次系统出 <b>10 个</b> 号、限时 <b>180 秒</b>，选 1 个或跳过；未选出则进入自编。自编：最多 <b>20 次</b> 编拟机会，逐批查重。每个号实时标注优质度。</div>
+    <button class="btn" id="startBtn" style="font-size:16px;padding:14px 34px">🎯 开始随机选号</button>
+    <div style="margin-top:14px"><button class="btn ghost" id="startToCustom">直接进入自编选号</button></div>
+  </div>
+
+  <!-- 随机选号 -->
+  <div id="randomBox" style="display:none">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="muted">第 <b id="rRound">1</b> / 5 批</div>
+          <div class="muted">剩余机会：<b id="rLeft">5</b></div>
+        </div>
+        <div style="text-align:right">
+          <div class="muted">本批倒计时</div>
+          <div class="timer" id="rTimer">180</div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn" id="rPickBest">⭐ 选最优</button>
+        <button class="btn ghost" id="rSkip">跳过本批</button>
+        <button class="btn gray" id="rToCustom">直接进入自编</button>
+      </div>
+    </div>
+    <div class="grid" id="randomGrid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div>
+  </div>
+
+  <!-- 自编选号 -->
+  <div id="customBox" style="display:none">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div class="muted">自编剩余机会：<b id="cLeft">20</b> 次</div>
+        <div class="muted">已锁定：<b id="cLocked">—</b></div>
+      </div>
+      <label>本批可录入 1–5 个心仪号（按优先级，系统依次查重，首个可用即锁定）</label>
+      <div class="two" id="customInputs"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="cSubmit">验证本批</button>
+        <button class="btn ghost" id="cRand">随机塞一个示例</button>
+      </div>
+      <div id="cResult" class="muted" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <h3>📜 自编查重记录</h3>
+      <div id="cLog"></div>
+    </div>
+  </div>
+
+  <!-- 优质评分权重 -->
+  <div class="card">
+    <h3>⚖️ 优质评分权重（三模块共用）</h3>
+    <div class="slider-row"><span>吉利</span><input type="range" id="wLuck" min="0" max="3" step="0.5" value="1"><span id="wLuckV">1</span></div>
+    <div class="slider-row"><span>连号</span><input type="range" id="wRun" min="0" max="3" step="0.5" value="1"><span id="wRunV">1</span></div>
+    <div class="slider-row"><span>对称</span><input type="range" id="wPat" min="0" max="3" step="0.5" value="1"><span id="wPatV">1</span></div>
+    <div class="muted">判定维度：吉利(多6/8/9少4) · 连号/顺子(888、123、678) · 对称/规律(AABB、回文)。</div>
+  </div>
+
+  <!-- 结果/收藏 -->
+  <div class="card">
+    <h3>🏆 本场结果 & 我的收藏</h3>
+    <div id="finalPlate" class="plate-num" style="font-size:20px;margin-bottom:8px;color:var(--red)">尚未选定号牌</div>
+    <div class="row">
+      <button class="btn ghost" id="saveFav">★ 收藏当前候选</button>
+      <button class="btn gray" id="clearFav">清空收藏</button>
+    </div>
+    <div id="favList" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- ===================== 拍照识号 ===================== -->
+<div class="page" id="page-ocr">
+  <div class="card">
+    <h3>📸 拍照识号（本地离线 OCR）</h3>
+    <div class="hint">对准 <b>12123 选号界面候选页</b>（每页约 10 个大号），拍照后本地识别并自动评分排序，标出最优。照片不出本机。<br>⚠️ <b>自动识别需通过本地服务器打开</b>（浏览器禁止 file:// 下运行识别引擎）。直接双击打开时本功能降级为手动录入。本地服务器：在文件目录执行 <code>python -m http.server 8000</code>，再访问 <code>http://localhost:8000/选号验车工具.html</code>。</div>
+    <div class="row" style="margin-top:10px">
+      <label style="margin:0;flex:1">
+        <input type="file" id="capInput" accept="image/*" capture="environment">
+      </label>
+      <button class="btn" id="doOcr">识别</button>
+    </div>
+    <div id="ocrStatus" class="muted" style="margin-top:8px"></div>
+    <img id="capPreview" class="cap-preview" style="display:none">
+  </div>
+
+  <div class="card">
+    <h3>✏️ 候选号码（识别后可手动校正，每页约 10 个）</h3>
+    <div class="grid" id="ocrGrid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="scoreOcr">评分排序</button>
+      <button class="btn gray" id="addOcrRow">+ 加一行</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🏅 识别结果（按优质度排序）</h3>
+    <div id="ocrResult"></div>
+  </div>
+</div>
+
+<!-- ===================== 验车帮手 ===================== -->
+<div class="page" id="page-ins">
+  <div class="card">
+    <h3>🚗 验车帮手（99% 极细 PDI 清单）</h3>
+    <div class="hint">逐项核对，可标记状态、写备注、拍照留证。关键项自动判定库存车/调表/日期一致性。最下方为「需实车测试」开关清单（无法仅凭照片判断）。</div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn gray" id="insReset">重置全部</button>
+      <button class="btn" id="insExport">导出验车报告</button>
+      <button class="btn ghost" id="insSave">保存进度</button>
+    </div>
+  </div>
+
+  <!-- 关键项自动判定 -->
+  <div class="card">
+    <h3>🔧 关键项自动判定（输入后实时算风险）</h3>
+    <div class="two">
+      <div><label>提车日期</label><input type="date" id="kPick"></div>
+      <div><label>车辆生产日期（铭牌）</label><input type="date" id="kVeh"></div>
+    </div>
+    <div class="two">
+      <div><label>仪表里程(km，新车应&lt;80)</label><input type="number" id="kMile" placeholder="如 12"></div>
+      <div><label>电池生产日期(可选)</label><input type="date" id="kBat"></div>
+    </div>
+    <label>四条轮胎生产日期（直接输入胎侧 DOT 末尾 4 位，如 <b>3523</b> = 2023 年第 35 周）</label>
+    <div class="two">
+      <input type="text" id="kTire1" placeholder="轮胎1 如 3523" maxlength="6" inputmode="numeric">
+      <input type="text" id="kTire2" placeholder="轮胎2 如 1024" maxlength="6" inputmode="numeric">
+      <input type="text" id="kTire3" placeholder="轮胎3" maxlength="6" inputmode="numeric">
+      <input type="text" id="kTire4" placeholder="轮胎4" maxlength="6" inputmode="numeric">
+    </div>
+    <div id="tireCalc" class="muted" style="margin:2px 0 6px"></div>
+    <label>四块玻璃生产日期（输入玻璃角标代码：点在数字<b>前</b>=上半年，<b>后</b>=下半年，如 <b>.3</b> / <b>3..</b> / <b>..3</b>）</label>
+    <div class="two">
+      <input type="text" id="kGlass1" placeholder="玻璃1 如 .3" maxlength="5">
+      <input type="text" id="kGlass2" placeholder="玻璃2" maxlength="5">
+      <input type="text" id="kGlass3" placeholder="玻璃3" maxlength="5">
+      <input type="text" id="kGlass4" placeholder="玻璃4" maxlength="5">
+    </div>
+    <div id="glassCalc" class="muted" style="margin-top:2px"></div>
+    <div id="kRisk"></div>
+  </div>
+
+  <div id="insList"></div>
+
+  <!-- 实车测试开关清单 -->
+  <div class="card">
+    <h3>🔌 需实车测试的开关/功能清单（逐项打勾）</h3>
+    <div id="switchList"></div>
+  </div>
+</div>
+
+<!-- 通用弹窗 -->
+<div class="modal-mask" id="modalMask"><div class="modal" id="modalBody"></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- 本地OCR资源（若同目录 ocr/ 下存在 tesseract，则启用自动识别；否则降级手动） -->
+<script src="./ocr/tesseract.min.js" onerror="window.__noOCR=true"></script>
+<script>
+/* ============ 通用 ============ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1800);}
+function modal(html){$('#modalBody').innerHTML=html;$('#modalMask').classList.add('show');}
+$('#modalMask').addEventListener('click',e=>{if(e.target.id==='modalMask')$('#modalMask').classList.remove('show');});
+
+/* 标签页切换 */
+$$('.tab').forEach(t=>t.onclick=()=>{
+  $$('.tab').forEach(x=>x.classList.remove('active'));
+  $$('.page').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  $('#page-'+t.dataset.tab).classList.add('active');
+  if(t.dataset.tab==='sel')renderFav();
+});
+
+/* ============ 优质评分算法 ============ */
+const CHARS='0123456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // 排除 I、O
+function randSuffix(){let s='';for(let i=0;i<6;i++)s+=CHARS[Math.floor(Math.random()*CHARS.length)];return s;}
+function weights(){return{l:+$('#wLuck').value,r:+$('#wRun').value,p:+$('#wPat').value};}
+function straightBonus(digits){
+  let best=0;
+  for(let len=digits.length;len>=3;len--){
+    for(let s=0;s+len<=digits.length;s++){
+      const sub=digits.substr(s,len);let asc=true,desc=true;
+      for(let k=1;k<sub.length;k++){if(+sub[k]-+sub[k-1]!==1)asc=false;if(+sub[k-1]-+sub[k]!==1)desc=false;}
+      if(asc||desc)best=Math.max(best,(len-2)*3);
+    }
+  }
+  return best;
+}
+function scorePlate(suffix){
+  const w=weights();const digits=suffix.replace(/[^0-9]/g,'');
+  let luck=0;for(const c of suffix){if('8'.includes(c))luck+=3;else if(c==='6')luck+=2;else if(c==='9')luck+=1.5;else if(c==='0')luck+=0.5;else if(c==='4')luck-=2;}
+  let runScore=0,i=0;
+  while(i<digits.length){let j=i;while(j<digits.length&&digits[j]===digits[i])j++;if(j-i>=2)runScore+=(j-i-1)*2.5;i=j;}
+  const seq=straightBonus(digits);
+  let pat=0;const s=suffix;
+  const tests=[[/^(.)\1(.)\2(.)\3$/,6],[/^(.)(.)\1\2\1\2$/,6],[/^(.)(.)(.)\1\2\3$/,6],[/^(.)\1(.)\2$/,4],[/^(.)(.)\1\2$/,4],[/^(.)\1\1\1\1\1$/,12]];
+  for(const[r,pt]of tests)if(r.test(s))pat+=pt;
+  if(s===s.split('').reverse().join(''))pat+=9;
+  const total=w.l*luck + w.r*(runScore+seq) + w.p*pat;
+  let tier,cls;
+  if(total>=20){tier='极品';cls='b-jipin';}
+  else if(total>=11){tier='优质';cls='b-you';}
+  else if(total>=4.5){tier='普通';cls='b-putong';}
+  else{tier='一般';cls='b-yiban';}
+  return{total:+total.toFixed(1),tier,cls,luck:+luck.toFixed(1),run:+(runScore+seq).toFixed(1),pat:+pat.toFixed(1)};
+}
+function fullPlate(suffix){return '粤AD·'+suffix;}
+
+/* 权重显示 */
+['wLuck','wRun','wPat'].forEach(id=>{
+  $('#'+id).oninput=()=>{$('#'+id+'V').textContent=$('#'+id).value;};
+});
+
+/* ============ 选号模拟：随机 ============ */
+const SKey='dxw_sel';
+let S=store.get(SKey,{round:1,phase:'random',final:null,fav:[]});
+let rTimer=null,rLeft=5;
+
+function genRandomBatch(){
+  const arr=[];for(let i=0;i<10;i++){const suf=randSuffix();arr.push({suf,sc:scorePlate(suf)});}
+  return arr;
+}
+let curBatch=[];
+function renderRandom(){
+  $('#startBox').style.display='none';
+  $('#randomBox').style.display='block';
+  $('#rRound').textContent=S.round;rLeft=Math.max(0,6-S.round);$('#rLeft').textContent=rLeft;
+  curBatch=genRandomBatch();
+  const g=$('#randomGrid');g.innerHTML='';
+  curBatch.forEach((it,idx)=>{
+    const d=document.createElement('div');d.className='plate-card'+(it.sc.total>=11?' best':'');
+    d.innerHTML=`<div><div class="plate plate-num">${fullPlate(it.suf)}</div><div class="score">分${it.sc.total} · ${it.sc.tier}</div></div>
+      <button class="mini-btn" data-i="${idx}">选</button>`;
+    d.querySelector('button').onclick=()=>pickRandom(idx);
+    g.appendChild(d);
+  });
+  startTimer();
+}
+function startTimer(){
+  clearInterval(rTimer);let t=180;$('#rTimer').textContent=t;
+  rTimer=setInterval(()=>{t--;$('#rTimer').textContent=t;if(t<=0){clearInterval(rTimer);toast('本批超时，自动进入下一批');skipRound(true);}},1000);
+}
+function bestOfBatch(){let bi=0;curBatch.forEach((it,i)=>{if(it.sc.total>curBatch[bi].sc.total)bi=i;});return bi;}
+function pickRandom(i){clearInterval(rTimer);const it=curBatch[i];S.final={suf:it.suf,phase:'random'};store.set(SKey,S);showFinal();modal(`<h3>已选定号牌</h3><div class="plate-num" style="font-size:22px;color:var(--red);margin:10px 0">${fullPlate(it.suf)}</div><div>优质度：${it.sc.tier}（${it.sc.total}分）</div><button class="btn" style="margin-top:14px" onclick="closeModal()">好的</button>`);}
+function closeModal(){$('#modalMask').classList.remove('show');}
+window.closeModal=closeModal;
+$('#rPickBest').onclick=()=>{const bi=bestOfBatch();pickRandom(bi);};
+$('#rSkip').onclick=()=>skipRound(false);
+function skipRound(auto){
+  clearInterval(rTimer);
+  if(S.round>=5){toast('随机机会已用完，进入自编');gotoCustom();return;}
+  S.round++;store.set(SKey,S);renderRandom();
+  if(auto)toast('已进入第'+S.round+'批');
+}
+$('#rToCustom').onclick=()=>gotoCustom();
+function gotoCustom(){
+  clearInterval(rTimer);S.phase='custom';store.set(SKey,S);
+  $('#startBox').style.display='none';$('#randomBox').style.display='none';$('#customBox').style.display='block';
+  $$('#phaseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.phase==='custom'));
+  renderCustom();
+}
+$$('#phaseSeg button').forEach(b=>b.onclick=()=>{
+  const p=b.dataset.phase;
+  $$('#phaseSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  if(p==='random'){$('#randomBox').style.display='block';$('#customBox').style.display='none';S.phase='random';store.set(SKey,S);renderRandom();}
+  else gotoCustom();
+});
+
+/* 选号模拟：自编 */
+let C=store.get('dxw_custom',{left:20,locked:null,log:[]});
+function renderCustom(){
+  $('#cLeft').textContent=C.left;$('#cLocked').textContent=C.locked?fullPlate(C.locked):'—';
+  if(!$('#customInputs').children.length){
+    for(let i=0;i<5;i++){const inp=document.createElement('input');inp.placeholder='如 '+randSuffix();inp.maxLength=6;inp.dataset.idx=i;$('#customInputs').appendChild(inp);}
+  }
+  $('#cLog').innerHTML=C.log.length?C.log.map(l=>`<div class="fav-item"><span class="plate">${fullPlate(l.suf)}</span><span class="badge ${l.ok?'b-you':'b-yiban'}">${l.ok?'可用·已锁':'已占用'}</span></div>`).join(''):'<div class="muted">暂无记录</div>';
+}
+$('#cSubmit').onclick=()=>{
+  if(C.left<=0){toast('自编机会已用完');return;}
+  const vals=$$('#customInputs input').map(i=>i.value.trim().toUpperCase()).filter(Boolean);
+  if(!vals.length){toast('请输入至少一个号码');return;}
+  let locked=null,occupied=[];
+  vals.forEach(v=>{
+    const suf=v.replace(/[^0-9A-Z]/g,'').slice(0,6);
+    const sc=scorePlate(suf);
+    const avail=Math.random()>0.55; // 模拟查重：约45%概率可用
+    if(avail&&!locked){locked=suf;C.log.unshift({suf,ok:true});}
+    else{C.log.unshift({suf,ok:false});occupied.push(fullPlate(suf));}
+  });
+  C.left--;
+  if(locked){C.locked=locked;S.final={suf:locked,phase:'custom'};store.set(SKey,S);}
+  store.set('dxw_custom',C);
+  $('#cResult').innerHTML=locked?`<span class="pill green">🎉 锁定 ${fullPlate(locked)}（${scorePlate(locked).tier}）</span>`:`<span class="pill red">本批全部被占用，消耗1次机会</span>`+(occupied.length?`<div class="muted" style="margin-top:4px">已占用：${occupied.join('、')}</div>`:'');
+  renderCustom();
+};
+$('#cRand').onclick=()=>{const inp=$$('#customInputs input').find(i=>!i.value);if(inp)inp.value=randSuffix();};
+
+/* 结果/收藏 */
+function showFinal(){$('#finalPlate').textContent=S.final?fullPlate(S.final.suf)+'（'+scorePlate(S.final.suf).tier+'）':'尚未选定号牌';}
+function renderFav(){
+  $('#favList').innerHTML=S.fav.length?S.fav.map((f,i)=>`<div class="fav-item"><span class="plate">${fullPlate(f)} <span class="badge ${scorePlate(f).cls}">${scorePlate(f).tier}</span></span><button class="mini-btn" data-i="${i}">删</button></div>`).join(''):'<div class="muted">暂无收藏</div>';
+  $$('#favList .mini-btn').forEach(b=>b.onclick=()=>{S.fav.splice(+b.dataset.i,1);store.set(SKey,S);renderFav();});
+}
+$('#saveFav').onclick=()=>{
+  const cand=S.final?S.final.suf:'';
+  if(!cand){toast('先选定或自编一个号再收藏');return;}
+  if(!S.fav.includes(cand)){S.fav.push(cand);store.set(SKey,S);toast('已收藏 '+fullPlate(cand));}
+  renderFav();
+};
+$('#clearFav').onclick=()=>{S.fav=[];store.set(SKey,S);renderFav();toast('已清空');};
+
+/* 初始化选号页：random 阶段先展示「开始选号」引导，不自动出号；custom 阶段直接续上 */
+if(S.phase==='custom'){gotoCustom();}
+showFinal();renderFav();
+
+/* 开始选号引导按钮 */
+$('#startBtn').onclick=()=>{
+  S.round=1;S.phase='random';S.final=null;store.set(SKey,S);
+  $$('#phaseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.phase==='random'));
+  renderRandom();
+};
+$('#startToCustom').onclick=()=>{gotoCustom();};
+
+/* ============ 拍照识号 ============ */
+let capturedImg=null;
+const ocrRows=Array.from({length:10},()=>'');
+function renderOcrGrid(){
+  const g=$('#ocrGrid');g.innerHTML='';
+  ocrRows.forEach((v,i)=>{
+    const d=document.createElement('div');d.className='plate-card';
+    d.innerHTML=`<input value="${v}" data-i="${i}" placeholder="号${i+1}" style="font-family:monospace;font-weight:700" maxlength="6">`;
+    d.querySelector('input').oninput=e=>{ocrRows[i]=e.target.value.toUpperCase();};
+    g.appendChild(d);
+  });
+}
+renderOcrGrid();
+$('#addOcrRow').onclick=()=>{ocrRows.push('');renderOcrGrid();};
+$('#capInput').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=ev=>{capturedImg=ev.target.result;$('#capPreview').src=capturedImg;$('#capPreview').style.display='block';};
+  r.readAsDataURL(f);
+};
+const isFile=(location.protocol==='file:');
+$('#doOcr').onclick=async()=>{
+  if(!capturedImg){toast('请先拍照/选择图片');return;}
+  if(isFile){$('#ocrStatus').textContent='⚠️ 当前为 file:// 打开，浏览器禁止本地识别引擎运行，已降级为手动录入。请用本地服务器打开以启用自动识别（见上方说明）。';toast('file方式无法自动识别');return;}
+  if(window.__noOCR||!window.Tesseract){$('#ocrStatus').textContent='未检测到本地 OCR 资源（ocr/tesseract.min.js），已自动降级为手动录入，请直接在上方 10 格中校正号码。';toast('无OCR资源，手动录入');return;}
+  $('#ocrStatus').textContent='识别中（本地运算，请稍候）…';
+  try{
+    const worker=await Tesseract.createWorker({workerPath:'./ocr/worker.min.js',corePath:'./ocr/tesseract-core.wasm.js',langPath:'./ocr/',logger:m=>{if(m.status==='recognizing text')$('#ocrStatus').textContent='识别中…'+Math.round(m.progress*100)+'%';}});
+    await worker.load();await worker.loadLanguage('eng');await worker.initialize('eng');
+    // 预处理：灰度+二值化+放大
+    const cv=await preprocess(capturedImg);
+    const {data:{text}}=await worker.recognize(cv);
+    await worker.terminate();
+    const found=parsePlates(text);
+    found.slice(0,ocrRows.length).forEach((s,i)=>{ocrRows[i]=s;});
+    renderOcrGrid();
+    $('#ocrStatus').textContent='识别完成，已填入候选格，请校正后点「评分排序」。';
+    toast('识别完成');
+  }catch(err){$('#ocrStatus').textContent='OCR 失败：'+err.message+'（可手动录入）';toast('OCR失败，手动录入');}
+};
+function preprocess(dataUrl){
+  return new Promise(res=>{
+    const img=new Image();img.onload=()=>{
+      const scale=Math.max(2,800/img.width);
+      const w=img.width*scale,h=img.height*scale;
+      const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+      x.drawImage(img,0,0,w,h);
+      const imgData=x.getImageData(0,0,w,h);const d=imgData.data;
+      for(let i=0;i<d.length;i+=4){const g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];const v=g>128?255:0;d[i]=d[i+1]=d[i+2]=v;}
+      x.putImageData(imgData,0,0);res(c);
+    };img.src=dataUrl;
+  });
+}
+function parsePlates(text){
+  const out=[];
+  const re=/[A-Z0-9]{5,7}/g;let m;
+  while((m=re.exec(text))){let s=m[0].replace(/[^0-9A-Z]/g,'');if(s.length>=5&&s.length<=7)out.push(s.slice(-6));}
+  return out;
+}
+$('#scoreOcr').onclick=()=>{
+  const items=ocrRows.map(r=>r.trim().toUpperCase()).filter(r=>r.length>=5);
+  if(!items.length){toast('请先填入号码');return;}
+  const scored=items.map(suf=>({suf,sc:scorePlate(suf)})).sort((a,b)=>b.sc.total-a.sc.total);
+  const box=$('#ocrResult');box.innerHTML='';
+  scored.forEach((it,i)=>{
+    const d=document.createElement('div');d.className='plate-card'+(i===0?' best':'');
+    d.innerHTML=`<div><div class="plate plate-num">${i===0?'🥇 ':''}${fullPlate(it.suf)}</div><div class="score">分${it.sc.total} · ${it.sc.tier}</div></div>
+      <button class="mini-btn" data-s="${it.suf}">收藏</button>`;
+    d.querySelector('button').onclick=()=>{if(!S.fav.includes(it.suf)){S.fav.push(it.suf);store.set(SKey,S);toast('已收藏');}};
+    box.appendChild(d);
+  });
+  toast('已按优质度排序');
+};
+
+/* ============ 验车帮手 ============ */
+const INS=store.get('dxw_ins',{items:{},keys:{},switches:{}});
+const checklist=[
+  {cat:'一、文件与身份核对',items:[
+    {id:'f1',t:'购车发票',d:'核对购车人姓名、车架号(VIN)、金额与实车一致'},
+    {id:'f2',t:'车辆合格证 / 货物进口证明书',d:'国产车合格证；进口车需海关货物进口证明书+商检单'},
+    {id:'f3',t:'车辆一致性证书',d:'参数与实车配置、铭牌一致'},
+    {id:'f4',t:'三包凭证',d:'确认经销商盖章、三包起算日期'},
+    {id:'f5',t:'保养手册 / 使用说明书',d:'含新能源专属说明'},
+    {id:'f6',t:'两把车钥匙（含机械钥匙）',d:'智能钥匙+机械应急钥匙，测试各自开锁'},
+    {id:'f7',t:'新能源充电权益',d:'充电桩安装告知书 / 充电卡或 App 充电权益说明'},
+    {id:'f8',t:'VIN 与发票/合格证一致',d:'前挡风左下 + 铭牌 + 发票三处 VIN 一致；核对电机号'},
+  ]},
+  {cat:'二、外观漆面',items:[
+    {id:'p1',t:'全车漆面（划痕/橘皮/色差/颗粒）',d:'阳光下 45° 角看反光，绕车一周细看'},
+    {id:'p2',t:'引擎盖/车门/翼子板 缝隙',d:'左右对称、均匀，无错位/过大缝隙'},
+    {id:'p3',t:'车身腰线平直度',d:'侧视腰线是否连贯平直'},
+    {id:'p4',t:'前后保险杠漆面',d:'易运损区，看有无飞漆/蹭伤'},
+    {id:'p5',t:'车顶 / 车底边沿',d:'易漏检区域，留意边角'},
+    {id:'p6',t:'充电口盖板',d:'开合顺畅、漆面完好、密封到位'},
+    {id:'p7',t:'后视镜外壳 / 轮眉裙边',d:'边角件易磕碰'},
+  ]},
+  {cat:'三、玻璃及生产日期',items:[
+    {id:'g1',t:'前挡风玻璃',d:'品牌、生产日期、有无裂纹/瑕疵/光学畸变'},
+    {id:'g2',t:'后挡风玻璃',d:'加热丝完好、日期一致'},
+    {id:'g3',t:'四门车窗玻璃',d:'日期相互一致，且早于车辆生产日期'},
+    {id:'g4',t:'天窗玻璃',d:'有无划痕、开合无异响'},
+    {id:'g5',t:'玻璃日期一致性判定',d:'所有玻璃日期应 ≤ 车辆生产日期且彼此接近，差异过大需追问'},
+  ]},
+  {cat:'四、轮胎与轮毂',items:[
+    {id:'t1',t:'四条轮胎品牌/型号/规格',d:'一致，符合出厂规格'},
+    {id:'t2',t:'轮胎生产日期（DOT）',d:'四位数字=周+年，应早于车辆生产日期'},
+    {id:'t3',t:'胎毛 / 胎壁损伤 / 鼓包',d:'新车应有胎毛，无损伤鼓包'},
+    {id:'t4',t:'轮毂划伤 / 变形',d:'四轮毂无磕碰变形'},
+    {id:'t5',t:'备胎 / 补胎包',d:'确认随车补胎液+充气泵（多数纯电无备胎）'},
+    {id:'t6',t:'胎压',d:'新车常偏高，提车后按需调整至标准值'},
+  ]},
+  {cat:'五、灯光',items:[
+    {id:'l1',t:'前大灯（远近光 / 日行灯）',d:'点亮正常、无进水雾气'},
+    {id:'l2',t:'尾灯 / 刹车灯 / 倒车灯',d:'逐一测试'},
+    {id:'l3',t:'转向灯（前后左右）',d:'闪烁正常'},
+    {id:'l4',t:'雾灯',d:'前/后雾灯点亮'},
+    {id:'l5',t:'车内照明 / 氛围灯',d:'各档位正常'},
+    {id:'l6',t:'牌照灯',d:'夜间可照亮号牌'},
+  ]},
+  {cat:'六、内饰',items:[
+    {id:'n1',t:'座椅（皮质/缝线/调节）',d:'无破损，电动调节/加热通风正常'},
+    {id:'n2',t:'中控台 / 门板',d:'无划伤、异色、装配缝隙'},
+    {id:'n3',t:'顶棚',d:'无污渍松弛'},
+    {id:'n4',t:'地毯 / 脚垫',d:'新车应有原厂脚垫'},
+    {id:'n5',t:'新车异味程度',d:'记录气味强度，过浓需通风'},
+    {id:'n6',t:'方向盘 / 档把',d:'无磨损（新车应全新）'},
+    {id:'n7',t:'安全带',d:'抽拉顺滑、生产日期无误'},
+    {id:'n8',t:'天窗遮阳帘',d:'开合正常无卡滞'},
+  ]},
+  {cat:'七、底盘与前舱（纯电三电）',items:[
+    {id:'c1',t:'底盘磕碰 / 托底 / 锈蚀',d:'举升或上沟查看，无运损'},
+    {id:'c2',t:'电池包底部',d:'无磕伤、变形、渗漏'},
+    {id:'c3',t:'冷却液液位（电池/电机）',d:'在 MIN-MAX 之间'},
+    {id:'c4',t:'玻璃水刻度',d:'是否在合理液位'},
+    {id:'c5',t:'制动液 / 转向助力液',d:'液位正常、无渗漏'},
+    {id:'c6',t:'线束包扎',d:'整齐无破损裸露'},
+    {id:'c7',t:'减震器渗漏',d:'无油渍'},
+  ]},
+  {cat:'八、随车工具与充电',items:[
+    {id:'u1',t:'充电枪（交流/直流）及线缆',d:'齐全、无破损'},
+    {id:'u2',t:'随车工具包',d:'千斤顶/拖钩/扳手（确认是否减配）'},
+    {id:'u3',t:'三角警示牌',d:'必备'},
+    {id:'u4',t:'反光背心',d:'必备'},
+    {id:'u5',t:'急救包（部分车型）',d:'确认随车'},
+    {id:'u6',t:'补胎工具 / 充气泵',d:'新能源常见随车配置'},
+  ]},
+];
+const switches=[
+  {id:'s1',t:'车窗升降（四门+防夹）'},{id:'s2',t:'天窗开合 / 遮阳帘'},
+  {id:'s3',t:'空调制冷 / 制热 / 出风'},{id:'s4',t:'中控屏触控 / 导航 / 蓝牙 / CarPlay'},
+  {id:'s5',t:'仪表显示完整'},{id:'s6',t:'360 影像 / 倒车影像'},
+  {id:'s7',t:'雨刮（快慢 / 喷水）'},{id:'s8',t:'灯光开关（远近光/雾灯/转向）'},
+  {id:'s9',t:'喇叭'},{id:'s10',t:'电子手刹 / AutoHold'},
+  {id:'s11',t:'充电口开合 + 实际充电测试（慢充/快充）'},{id:'s12',t:'雷达 / 预警'},
+  {id:'s13',t:'座椅加热 / 通风 / 记忆'},{id:'s14',t:'门锁 / 无钥匙进入 / 远程启动'},
+  {id:'s15',t:'能量回收档位'},{id:'s16',t:'驾驶模式切换'},
+  {id:'s17',t:'语音助手'},{id:'s18',t:'行车记录仪（前后）'},
+  {id:'s19',t:'哨兵模式 / 自动泊车'},
+];
+function renderIns(){
+  const wrap=$('#insList');wrap.innerHTML='';
+  checklist.forEach(group=>{
+    const h=document.createElement('div');h.className='cat-title';h.textContent=group.cat;wrap.appendChild(h);
+    const card=document.createElement('div');card.className='card';card.style.marginBottom='6px';
+    group.items.forEach(it=>{
+      const st=INS.items[it.id]||{ok:false,note:'',photo:''};
+      const row=document.createElement('div');row.className='check-item';
+      row.innerHTML=`<input type="checkbox" ${st.ok?'checked':''} data-id="${it.id}">
+        <div class="ci-body"><div class="ci-title">${it.t}</div><div class="ci-desc">${it.d}</div>
+        <div class="ci-actions">
+          <button class="mini-btn note" data-id="${it.id}">备注</button>
+          <button class="mini-btn photo" data-id="${it.id}">${st.photo?'✓已拍照':'拍照留证'}</button>
+          ${st.photo?`<img class="thumb" src="${st.photo}">`:''}
+          ${st.note?`<span class="pill">${st.note.length>14?st.note.slice(0,14)+'…':st.note}</span>`:''}
+        </div></div>`;
+      row.querySelector('input').onchange=e=>{INS.items[it.id]=INS.items[it.id]||{};INS.items[it.id].ok=e.target.checked;saveIns();};
+      row.querySelector('.note').onclick=()=>{const cur=(INS.items[it.id]||{}).note||'';modal(`<h3>备注 · ${it.t}</h3><textarea id="nt" rows="3" style="width:100%">${cur}</textarea><div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn gray" onclick="closeModal()">取消</button><button class="btn" onclick="saveNote('${it.id}')">保存</button></div>`);};
+      row.querySelector('.photo').onclick=()=>{
+        modal(`<h3>拍照留证 · ${it.t}</h3><input type="file" id="ph" accept="image/*" capture="environment"><div id="phprev"></div><div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn gray" onclick="closeModal()">取消</button><button class="btn" onclick="savePhoto('${it.id}')">保存照片</button></div>`);
+        $('#ph').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{window._phData=ev.target.result;$('#phprev').innerHTML='<img class="cap-preview" src="'+ev.target.result+'">';};r.readAsDataURL(f);};
+      };
+      card.appendChild(row);
+    });
+    wrap.appendChild(card);
+  });
+  // 开关清单
+  const sw=$('#switchList');sw.innerHTML='';
+  switches.forEach(s=>{
+    const st=INS.switches[s.id]||false;
+    const row=document.createElement('div');row.className='check-item';
+    row.innerHTML=`<input type="checkbox" ${st?'checked':''} data-sid="${s.id}"><div class="ci-body"><div class="ci-title">${s.t}</div></div>`;
+    row.querySelector('input').onchange=e=>{INS.switches[s.id]=e.target.checked;saveIns();};
+    sw.appendChild(row);
+  });
+}
+window.saveNote=id=>{INS.items[id]=INS.items[id]||{};INS.items[id].note=$('#nt').value;saveIns();closeModal();toast('已保存备注');};
+window.savePhoto=id=>{
+  if(!window._phData){toast('请先选择照片');return;}
+  // 压缩缩略图以控制 localStorage 体积
+  const img=new Image();img.onload=()=>{
+    const c=document.createElement('canvas');const max=360;const sc=Math.min(1,max/img.width);c.width=img.width*sc;c.height=img.height*sc;c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    let data;try{data=c.toDataURL('image/jpeg',0.5);}catch(e){data=window._phData;}
+    INS.items[id]=INS.items[id]||{};INS.items[id].photo=data;saveIns(true);window._phData=null;closeModal();renderIns();toast('已保存照片');
+  };img.src=window._phData;
+};
+function saveIns(silent){
+  try{store.set('dxw_ins',INS);}catch(e){toast('存储空间不足，照片未全部保存');}
+  if(!silent)toast('已保存进度');
+}
+$('#insSave').onclick=()=>saveIns();
+$('#insReset').onclick=()=>{if(confirm('确定重置全部验车记录？')){INS.items={};INS.switches={};store.set('dxw_ins',INS);renderIns();updateRisk();toast('已重置');}};
+$('#insExport').onclick=()=>{
+  let txt='【广州新能源新车验车报告】\n生成时间：'+new Date().toLocaleString()+'\n\n';
+  checklist.forEach(g=>{txt+='\n'+g.cat+'\n';g.items.forEach(it=>{const st=INS.items[it.id]||{};txt+=`  [${st.ok?'✓':'✗'}] ${it.t}${st.note?'（备注：${st.note}）':''}\n`;});});
+  txt+='\n【需实车测试开关清单】\n';
+  switches.forEach(s=>{txt+=`  [${INS.switches[s.id]?'✓':'✗'}] ${s.t}\n`;});
+  txt+='\n【关键项自动判定】\n'+($('#kRisk').textContent||'（未填写）')+'\n';
+  const blob=new Blob([txt],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='验车报告_'+Date.now()+'.txt';a.click();
+  toast('报告已导出');
+};
+
+/* 关键项自动判定 */
+function ym(v){if(!v)return null;const[y,m]=v.split('-');return new Date(+y,+m-1,1);}
+function mi(d){return d.getFullYear()*12+d.getMonth();}
+function fmtYM(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月';}
+/* 轮胎 DOT 末尾4位：WWYY（周/年） */
+function parseDot(str){
+  if(!str)return null;
+  const s=(''+str).replace(/[^0-9]/g,'').slice(-4);
+  if(s.length<3)return null;
+  const wk=+s.slice(0,2),yr=+s.slice(-2);
+  if(!(wk>=1&&wk<=53))return null;
+  let fy=2000+yr;const now=new Date();while(fy>now.getFullYear())fy-=10;
+  return {date:new Date(fy,0,1+(wk-1)*7),monthKnown:true};
+}
+/* 玻璃角标：数字=年份尾数；点在数字前=上半年(月=7-点数)，点在后=下半年(月=13-点数) */
+function parseGlass(str){
+  if(!str)return null;
+  const norm=(''+str).replace(/·/g,'.');
+  const m=norm.match(/\d/);if(!m)return null;
+  const idx=norm.indexOf(m[0]);const dig=+m[0];
+  const left=(norm.slice(0,idx).match(/\./g)||[]).length;
+  const right=(norm.slice(idx+1).match(/\./g)||[]).length;
+  const nowY=new Date().getFullYear();let fy=2000+dig;[2010,2020].forEach(b=>{const c=b+dig;if(c<=nowY&&c>fy)fy=c;});
+  if(left>0&&right===0){const mo=7-left;if(mo>=1&&mo<=6)return {date:new Date(fy,mo-1,1),monthKnown:true};}
+  if(right>0&&left===0){const mo=13-right;if(mo>=7&&mo<=12)return {date:new Date(fy,mo-1,1),monthKnown:true};}
+  return {date:new Date(fy,0,1),monthKnown:false};
+}
+function showCalc(){
+  const t=[1,2,3,4].map(i=>{const r=parseDot($('#kTire'+i).value);return '轮胎'+i+'：'+(r?fmtYM(r.date):'—');});
+  $('#tireCalc').textContent=t.join('   ');
+  const g=[1,2,3,4].map(i=>{const r=parseGlass($('#kGlass'+i).value);return '玻璃'+i+'：'+(r?(fmtYM(r.date)+(r.monthKnown?'':'（月份不详）')):'—');});
+  $('#glassCalc').textContent=g.join('   ');
+}
+function updateRisk(){
+  const pick=ym($('#kPick').value),veh=ym($('#kVeh').value),mile=+$('#kMile').value,bat=ym($('#kBat').value);
+  const tires=[1,2,3,4].map(i=>parseDot($('#kTire'+i).value)).filter(Boolean);
+  const glasses=[1,2,3,4].map(i=>parseGlass($('#kGlass'+i).value)).filter(Boolean);
+  showCalc();
+  const risks=[];
+  if(pick&&veh){const m=mi(pick)-mi(veh);if(m>=6)risks.push(['warn','库存车风险：车辆生产至提车已 '+m+' 个月（≥6 个月需关注）']);else risks.push(['ok','车辆库存时长 '+m+' 个月，正常']);}
+  if(mile){if(mile>200)risks.push(['warn','里程异常：'+mile+'km，疑似调表/运损（新车通常<80km）']);else if(mile>80)risks.push(['warn','里程偏高：'+mile+'km，建议核实']);else risks.push(['ok','里程 '+mile+'km，属新车正常区间']);}
+  if(veh){tires.forEach((t,i)=>{if(mi(t.date)>mi(veh))risks.push(['warn','轮胎'+(i+1)+'生产日期('+fmtYM(t.date)+')晚于整车生产，疑似更换']);});
+  glasses.forEach((g,i)=>{if(g.monthKnown&&mi(g.date)>mi(veh))risks.push(['warn','玻璃'+(i+1)+'生产日期('+fmtYM(g.date)+')晚于整车生产，疑似更换']);});}
+  const known=[...tires,...glasses].filter(x=>x.monthKnown).map(x=>mi(x.date));
+  if(known.length>=2){const span=Math.max(...known)-Math.min(...known);if(span>3)risks.push(['warn','玻璃/轮胎生产日期跨度 '+span+' 个月，一致性存疑']);}
+  if(bat&&veh&&mi(bat)<mi(veh))risks.push(['ok','电池生产早于整车，合理']);
+  const box=$('#kRisk');
+  if(!risks.length){box.innerHTML='<div class="muted">填写上方日期/里程后自动判定。</div>';return;}
+  box.innerHTML=risks.map(r=>`<div class="risk ${r[0]==='ok'?'ok':'warn'}">${r[0]==='ok'?'✅':'⚠️'} ${r[1]}</div>`).join('');
+}
+['kPick','kVeh','kMile','kBat','kTire1','kTire2','kTire3','kTire4','kGlass1','kGlass2','kGlass3','kGlass4'].forEach(id=>{$('#'+id).onchange=updateRisk;$('#'+id).oninput=updateRisk;});
+renderIns();updateRisk();
+
+/* 提示 OCR 资源状态 */
+if(window.__noOCR){$('#ocrStatus').textContent='提示：当前未检测到本地 OCR 资源（需 ocr/ 目录下的 tesseract 文件）。可手动录入，或把 OCR 资源放入同目录 ocr/ 后刷新启用自动识别。';}
+else if(isFile){$('#ocrStatus').textContent='⚠️ 你正以 file:// 方式打开，浏览器禁止本地识别引擎运行，自动识别不可用（已可手动录入）。如需自动识别，请在文件目录运行：python -m http.server 8000，再访问 http://localhost:8000/选号验车工具.html';}
+</script>
+</body>
+</html>
