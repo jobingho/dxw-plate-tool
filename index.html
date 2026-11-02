@@ -6,52 +6,87 @@
 <title>广州新能源上牌·选号·验车 三合一工具</title>
 <style>
   :root{
-    --red:#e23b3b; --red-d:#c62828; --gold:#e0a82e; --green:#1f9d55;
-    --bg:#f5f6f8; --card:#ffffff; --line:#e3e6ea; --txt:#1f2733; --sub:#6b7585;
-    --blue:#2f6fed;
+    /* 12123 蓝白风格 */
+    --blue:#1a73e8; --blue-d:#1559c4; --blue-l:#e8f0fe;
+    --bg:#eef2f7; --card:#ffffff; --line:#e1e6ee; --txt:#1f2733; --sub:#6b7585;
+    --green:#1aa34a; --green-d:#0f8a3c;
+    --gold:#e0a82e; --red:#e23b3b;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);font-size:15px;}
-  header{background:linear-gradient(135deg,var(--red),var(--red-d));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 14px;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  header{background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 14px;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(21,89,196,.25);}
   header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.5px;}
-  header p{margin:4px 0 0;font-size:11px;opacity:.85;}
+  header p{margin:4px 0 0;font-size:11px;opacity:.9;}
   .tabs{display:flex;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:15;}
   .tab{flex:1;text-align:center;padding:13px 4px;font-size:14px;color:var(--sub);font-weight:600;cursor:pointer;border-bottom:3px solid transparent;}
-  .tab.active{color:var(--red);border-bottom-color:var(--red);}
-  .page{display:none;padding:14px;max-width:760px;margin:0 auto;padding-bottom:calc(20px + env(safe-area-inset-bottom));}
+  .tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+  .page{display:none;padding:14px;max-width:760px;margin:0 auto;padding-bottom:calc(24px + env(safe-area-inset-bottom));}
   .page.active{display:block;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(20,40,80,.05);}
   .card h3{margin:0 0 10px;font-size:15px;display:flex;align-items:center;gap:6px;}
-  .btn{display:inline-block;background:var(--red);color:#fff;border:none;border-radius:9px;padding:12px 18px;min-height:44px;font-size:15px;font-weight:600;cursor:pointer;transition:.15s;line-height:1.1;}
+  .center{text-align:center;}
+  .btn{display:inline-block;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:12px 18px;min-height:46px;font-size:15px;font-weight:600;cursor:pointer;transition:.15s;line-height:1.1;}
   .btn:active{transform:scale(.97);}
-  .btn.ghost{background:#fff;color:var(--red);border:1px solid var(--red);}
-  .btn.blue{background:var(--blue);}
+  .btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--blue);}
   .btn.gray{background:#eef0f3;color:var(--sub);}
-  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  .grid{display:grid;gap:10px;}
-  input,select,textarea{font-family:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--txt);width:100%;}
-  label{font-size:13px;color:var(--sub);display:block;margin:8px 0 4px;}
-  .plate{font-family:"Courier New",monospace;font-weight:700;letter-spacing:1px;}
-  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff;}
-  .b-jipin{background:linear-gradient(135deg,#e0a82e,#c62828);}
-  .b-you{background:var(--red);}
-  .b-putong{background:#f0a93b;}
-  .b-yiban{background:#9aa3b0;}
+  .row.between{justify-content:space-between;}
+  input,select,textarea{font-family:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--txt);width:100%;}
+  label{font-size:13px;color:var(--sub);display:block;margin:10px 0 4px;}
   .muted{color:var(--sub);font-size:12px;}
-  .timer{font-size:26px;font-weight:800;color:var(--red);text-align:center;font-variant-numeric:tabular-nums;}
-  .plate-card{border:1px solid var(--line);border-radius:10px;padding:11px;display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;}
-  .plate-card.best{border:2px solid var(--gold);box-shadow:0 0 0 3px rgba(224,168,46,.18);}
-  .plate-num{font-size:18px;}
-  .score{font-size:12px;color:var(--sub);}
-  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
-  .seg button{flex:1;border:none;background:#fff;padding:12px;font-size:14px;color:var(--sub);cursor:pointer;min-height:44px;}
-  .seg button.on{background:var(--red);color:#fff;font-weight:700;}
+  .timer{font-size:24px;font-weight:800;color:var(--blue);text-align:center;font-variant-numeric:tabular-nums;}
+  .hint{background:var(--blue-l);border:1px solid #cfe0fb;border-radius:9px;padding:11px;font-size:12px;color:#22467e;line-height:1.6;margin-top:8px;}
+
+  /* 仿真实新能源车牌（渐变绿底白字） */
+  .plate-big{background:linear-gradient(180deg,var(--green),var(--green-d));color:#fff;border-radius:11px;padding:11px 12px;font-family:"Courier New",monospace;font-weight:800;font-size:21px;letter-spacing:1px;text-align:center;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25);}
+  .plate-big .prov{font-size:13px;background:rgba(0,0,0,.22);padding:2px 6px;border-radius:6px;margin-right:8px;vertical-align:middle;}
+
+  .dcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+  .score-badge{display:inline-block;font-size:13px;font-weight:800;padding:3px 9px;border-radius:20px;color:#fff;}
+  .sb-gold{background:linear-gradient(135deg,#e0a82e,#c62828);}
+  .sb-blue{background:var(--blue);}
+  .sb-gray{background:#8a94a6;}
+  .sb-red{background:var(--red);}
+  .mini-btn{font-size:12px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--sub);cursor:pointer;min-height:36px;}
+  .mini-btn.on{background:var(--green);color:#fff;border-color:var(--green);}
+  .mini-btn.jp{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  /* 子标签（随机/自编） */
+  .subtabs{display:flex;background:#fff;border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:12px;}
+  .subtabs button{flex:1;border:none;background:#fff;padding:12px;font-size:14px;color:var(--sub);cursor:pointer;min-height:46px;font-weight:600;}
+  .subtabs button.on{background:var(--blue);color:#fff;}
+
+  /* 自编虚拟键盘 */
+  .np{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+  .np button{padding:17px 0;font-size:21px;font-weight:800;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--txt);cursor:pointer;}
+  .np button:active{background:var(--blue-l);}
+  .np .del{background:#eef0f3;color:var(--sub);}
+  .slot{display:flex;align-items:center;justify-content:space-between;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .slot.empty{color:var(--sub);}
+  .slot .x{color:var(--red);font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;}
+
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:6px;background:#eef0f3;color:var(--sub);margin:2px;}
+  .pill.green{background:#e7f7ee;color:var(--green);}
+  .pill.red{background:#fdeaea;color:var(--red);}
+  .bar{height:14px;background:#e9edf2;border-radius:8px;overflow:hidden;}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));}
+  .reasons{margin-top:6px;line-height:1.7;}
+
+  /* 成功遮罩 */
+  .win-mask{position:fixed;inset:0;background:rgba(18,28,48,.62);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom));}
+  .win-mask.show{display:flex;}
+  .win{background:#fff;border-radius:20px;padding:30px 24px;text-align:center;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .win .big{font-size:46px;}
+  .win .pt{font-size:19px;font-weight:800;margin:8px 0 2px;}
+
+  /* 验车帮手（沿用） */
+  .toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(31,39,51,.92);color:#fff;padding:11px 18px;border-radius:24px;font-size:13px;z-index:99;opacity:0;transition:.25s;pointer-events:none;}
+  .toast.show{opacity:1;}
   .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
   .modal-mask.show{display:flex;}
   .modal{background:#fff;border-radius:14px;padding:18px;width:100%;max-width:380px;max-height:80vh;overflow:auto;}
-  .toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(31,39,51,.92);color:#fff;padding:11px 18px;border-radius:24px;font-size:13px;z-index:99;opacity:0;transition:.25s;pointer-events:none;}
-  .toast.show{opacity:1;}
   .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);}
   .check-item:last-child{border-bottom:none;}
   .check-item input[type=checkbox]{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--green);}
@@ -59,38 +94,14 @@
   .ci-title{font-size:14px;font-weight:600;}
   .ci-desc{font-size:12px;color:var(--sub);margin-top:2px;line-height:1.5;}
   .ci-actions{display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap;}
-  .mini-btn{font-size:12px;padding:7px 12px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--sub);cursor:pointer;min-height:34px;}
-  .mini-btn.on{background:var(--green);color:#fff;border-color:var(--green);}
-  .cat-title{font-size:14px;font-weight:800;color:var(--red);margin:14px 0 6px;padding-left:8px;border-left:4px solid var(--red);}
+  .cat-title{font-size:14px;font-weight:800;color:var(--blue);margin:14px 0 6px;padding-left:8px;border-left:4px solid var(--blue);}
   .risk{background:#fff4f4;border:1px solid #f3c9c9;border-radius:10px;padding:12px;margin-top:10px;}
   .risk.ok{background:#f1faf4;border-color:#bfe6cd;}
   .risk.warn{background:#fff8ec;border-color:#f3dca8;}
-  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:6px;background:#eef0f3;color:var(--sub);margin:2px;}
-  .pill.red{background:#fdeaea;color:var(--red);}
-  .pill.green{background:#eafaf0;color:var(--green);}
-  .pill.gold{background:#fbf2dc;color:#b5861f;}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  @media(max-width:480px){.two{grid-template-columns:1fr;}.timer{font-size:22px;}.page{padding-left:12px;padding-right:12px;}}
-  .fav-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);}
-  .slider-row{display:flex;align-items:center;gap:8px;margin:8px 0;}
-  .slider-row input[type=range]{flex:1;height:26px;}
-  .slider-row span{font-size:12px;color:var(--sub);width:42px;text-align:right;}
-  .hint{background:#eef4ff;border:1px solid #d4e2ff;border-radius:8px;padding:11px;font-size:12px;color:#33558c;line-height:1.6;}
   img.thumb{width:54px;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--line);}
   .cap-preview{max-width:100%;border-radius:10px;border:1px solid var(--line);margin-top:8px;}
-  /* 自编逐位输入 */
-  .intent-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
-  .intent-tab{flex:1;min-width:56px;padding:8px 4px;font-size:12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--sub);cursor:pointer;}
-  .intent-tab.on{border-color:var(--red);color:var(--red);font-weight:700;background:#fff4f4;}
-  .intent-tab.filled{color:var(--txt);}
-  .slot-row{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:12px 0;}
-  .slot{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;font-family:"Courier New",monospace;border:2px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;}
-  .slot.active{border-color:var(--red);box-shadow:0 0 0 3px rgba(198,40,40,.15);}
-  .slot.filled{border-color:var(--blue);color:var(--txt);}
-  .kb{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px;}
-  .kb-key{padding:13px 0;font-size:16px;font-weight:700;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:var(--txt);}
-  .kb-key:active{background:#eef0f3;}
-  .kb-fn{background:#eef0f3;color:var(--sub);}
+  @media(max-width:480px){.two{grid-template-columns:1fr;}.timer{font-size:21px;}.page{padding-left:12px;padding-right:12px;}}
 </style>
 </head>
 <body>
@@ -107,21 +118,15 @@
 
 <!-- ===================== 选号模拟 ===================== -->
 <div class="page active" id="page-sel">
-  <div class="card">
-    <h3>🎯 选号模拟（复刻 12123 线上流程）</h3>
-    <div class="seg" id="phaseSeg">
-      <button data-phase="random" class="on">随机选号</button>
-      <button data-phase="custom">自编选号</button>
-    </div>
-    <div class="hint" style="margin-top:10px">
-      随机选号：5 次机会，每次系统出 <b>10 个</b> 号、限时 <b>180 秒</b>，选 1 个或跳过；未选出则进入自编。自编：最多 <b>20 次</b> 编拟机会，逐批查重。每个号实时标注优质度。
-    </div>
+  <div class="subtabs" id="subTabs">
+    <button data-p="random" class="on">随机选号</button>
+    <button data-p="custom">自编选号</button>
   </div>
 
-  <!-- 开始选号引导 -->
-  <div id="startBox" class="card" style="text-align:center">
+  <!-- 开始引导 -->
+  <div id="startBox" class="card center">
     <h3 style="justify-content:center">🎯 准备开始选号</h3>
-    <div class="muted" style="margin:6px 0 16px;line-height:1.8">随机选号：5 次机会，每次系统出 <b>10 个</b> 号、限时 <b>180 秒</b>，选 1 个或跳过；未选出则进入自编。自编：最多 <b>20 次</b> 编拟机会，逐批查重。每个号实时标注优质度。</div>
+    <div class="muted" style="margin:6px 0 16px;line-height:1.9">随机选号：每次出 <b>10 个</b> 号、最多 <b>5 次</b>（共 50 选 1），可加入备选后确认。<br>自编选号：最多 <b>20 次</b> 编拟机会，按号段池 PN/PP/PQ/PR/PS/PT 自编并查重。</div>
     <button class="btn" id="startBtn" style="font-size:16px;padding:14px 34px">🎯 开始随机选号</button>
     <div style="margin-top:14px"><button class="btn ghost" id="startToCustom">直接进入自编选号</button></div>
   </div>
@@ -129,66 +134,60 @@
   <!-- 随机选号 -->
   <div id="randomBox" style="display:none">
     <div class="card">
-      <div class="row" style="justify-content:space-between">
+      <div class="row between">
         <div>
-          <div class="muted">第 <b id="rRound">1</b> / 5 批</div>
-          <div class="muted">剩余机会：<b id="rLeft">5</b></div>
+          <div class="muted">随机选号 · 50 选 1</div>
+          <div style="font-size:14px">剩余随机次数：<b id="rChances" style="color:var(--blue);font-size:17px">5</b></div>
         </div>
-        <div style="text-align:right">
-          <div class="muted">本批倒计时</div>
-          <div class="timer" id="rTimer">180</div>
+        <div class="row">
+          <button class="btn" id="rStart">开始随机</button>
+          <button class="btn ghost" id="rChange">换一批</button>
         </div>
       </div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn" id="rPickBest">⭐ 选最优</button>
-        <button class="btn ghost" id="rSkip">跳过本批</button>
-        <button class="btn gray" id="rToCustom">直接进入自编</button>
+      <div class="hint">每次出 10 个号，最多 5 次。点「加入备选」暂存（最多 5 个），备选区含 3 分钟倒计时，选好一个后点「确认选号」。</div>
+    </div>
+    <div class="grid2" id="randomGrid"></div>
+
+    <div class="card">
+      <div class="row between">
+        <h3 style="margin:0">📥 备选区（最多 5 个）</h3>
+        <div class="timer" id="altTimer" style="font-size:20px">180</div>
+      </div>
+      <div id="altList" class="muted" style="margin-top:6px">尚未加入备选</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="rConfirm">确认选号</button>
+        <button class="btn ghost" id="rToCustom2">去自编选号</button>
       </div>
     </div>
-    <div class="grid" id="randomGrid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div>
   </div>
 
   <!-- 自编选号 -->
   <div id="customBox" style="display:none">
     <div class="card">
-      <div class="row" style="justify-content:space-between">
-        <div class="muted">自编剩余机会：<b id="cLeft">20</b> 次</div>
-        <div class="muted">已锁定：<b id="cLocked">—</b></div>
+      <div class="row between">
+        <h3 style="margin:0">✍️ 自编选号</h3>
+        <div class="muted">剩余自编：<b id="cLeft" style="color:var(--blue);font-size:17px">20</b> 次</div>
       </div>
-      <div class="hint" style="margin:8px 0">逐位输入 6 位（前缀 <b>粤AD</b> 已固定）。仅可用 <b>数字 0-9</b> 与 <b>字母（不含 I、O）</b>，且至少含 <b>1 位数字</b>。请按车管所公布的号段格式自编，勿随意编排。</div>
-      <div class="intent-tabs" id="intentTabs"></div>
-      <div class="slot-row" id="slotRow"></div>
-      <div class="kb" id="kb"></div>
-      <div class="row" style="margin-top:10px">
-        <button class="btn" id="cSubmit">验证本批</button>
-        <button class="btn ghost" id="cRand">随机填一个</button>
+      <label>前两位字母（号段池）</label>
+      <select id="pairSel">
+        <option value="PN">PN</option><option value="PP">PP</option><option value="PQ">PQ</option>
+        <option value="PR">PR</option><option value="PS">PS</option><option value="PT">PT</option>
+      </select>
+      <label>输入 3 位数字（用下方虚拟键盘）</label>
+      <div class="plate-big" id="customPreview"><span class="prov">粤A</span>D·PN___</div>
+      <div class="np" id="np"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="addIntent">加入意向槽位</button>
+        <button class="btn gray" id="clearIntent">清空当前</button>
       </div>
-      <div id="cResult" class="muted" style="margin-top:8px"></div>
+      <div class="hint">格式：粤A·D + 字母(2位) + 数字(3位)。禁用字母 I、O。号段池固定为 PN/PP/PQ/PR/PS/PT。</div>
     </div>
     <div class="card">
-      <h3>📜 自编查重记录</h3>
-      <div id="cLog"></div>
+      <h3>🎯 意向号牌（5 个槽位）</h3>
+      <div id="intentSlots"></div>
+      <button class="btn" id="cValidate" style="margin-top:6px">验证并确认</button>
+      <div id="cResult" class="muted" style="margin-top:8px"></div>
     </div>
-  </div>
-
-  <!-- 优质评分权重 -->
-  <div class="card">
-    <h3>⚖️ 优质评分权重（三模块共用）</h3>
-    <div class="slider-row"><span>吉利</span><input type="range" id="wLuck" min="0" max="3" step="0.5" value="1"><span id="wLuckV">1</span></div>
-    <div class="slider-row"><span>连号</span><input type="range" id="wRun" min="0" max="3" step="0.5" value="1"><span id="wRunV">1</span></div>
-    <div class="slider-row"><span>对称</span><input type="range" id="wPat" min="0" max="3" step="0.5" value="1"><span id="wPatV">1</span></div>
-    <div class="muted">判定维度：吉利(多6/8/9少4) · 连号/顺子(888、123、678) · 对称/规律(AABB、回文)。</div>
-  </div>
-
-  <!-- 结果/收藏 -->
-  <div class="card">
-    <h3>🏆 本场结果 & 我的收藏</h3>
-    <div id="finalPlate" class="plate-num" style="font-size:20px;margin-bottom:8px;color:var(--red)">尚未选定号牌</div>
-    <div class="row">
-      <button class="btn ghost" id="saveFav">★ 收藏当前候选</button>
-      <button class="btn gray" id="clearFav">清空收藏</button>
-    </div>
-    <div id="favList" style="margin-top:10px"></div>
   </div>
 </div>
 
@@ -196,7 +195,7 @@
 <div class="page" id="page-ocr">
   <div class="card">
     <h3>📸 拍照识号（本地离线 OCR）</h3>
-    <div class="hint">对准 <b>12123 选号界面候选页</b>（每页约 10 个大号），拍照后本地识别并自动评分排序，标出最优。照片不出本机。<br>⚠️ <b>自动识别需通过本地服务器打开</b>（浏览器禁止 file:// 下运行识别引擎）。直接双击打开时本功能降级为手动录入。本地服务器：在文件目录执行 <code>python -m http.server 8000</code>，再访问 <code>http://localhost:8000/选号验车工具.html</code>。</div>
+    <div class="hint">对准 <b>12123 选号界面候选页</b>（每页约 10 个大号），拍照后本地识别并自动按 100 分制评分，标出最优。照片不出本机。<br>⚠️ <b>自动识别需通过本地服务器/云端打开</b>（浏览器禁止 file:// 下运行识别引擎）。直接双击打开时本功能降级为手动录入。</div>
     <div class="row" style="margin-top:10px">
       <label style="margin:0;flex:1">
         <input type="file" id="capInput" accept="image/*" capture="environment">
@@ -209,7 +208,7 @@
 
   <div class="card">
     <h3>✏️ 候选号码（识别后可手动校正，每页约 10 个）</h3>
-    <div class="grid" id="ocrGrid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))"></div>
+    <div class="grid2" id="ocrGrid"></div>
     <div class="row" style="margin-top:10px">
       <button class="btn" id="scoreOcr">评分排序</button>
       <button class="btn gray" id="addOcrRow">+ 加一行</button>
@@ -217,7 +216,7 @@
   </div>
 
   <div class="card">
-    <h3>🏅 识别结果（按优质度排序）</h3>
+    <h3>🏅 识别结果（100 分制 · 按评分排序）</h3>
     <div id="ocrResult"></div>
   </div>
 </div>
@@ -273,9 +272,20 @@
   </div>
 </div>
 
-<!-- 通用弹窗 -->
+<!-- 通用弹窗 / 提示 -->
 <div class="modal-mask" id="modalMask"><div class="modal" id="modalBody"></div></div>
 <div class="toast" id="toast"></div>
+
+<!-- 选号成功遮罩 -->
+<div class="win-mask" id="winMask">
+  <div class="win">
+    <div class="big">🎉</div>
+    <div class="pt">选号成功</div>
+    <div class="plate-big" id="winPlate" style="display:inline-block;margin:8px 0"><span class="prov">粤A</span>D·PN688</div>
+    <div id="winTier" class="muted" style="font-size:13px"></div>
+    <button class="btn" id="winAgain" style="margin-top:18px">重新模拟</button>
+  </div>
+</div>
 
 <!-- 本地OCR资源（若同目录 ocr/ 下存在 tesseract，则启用自动识别；否则降级手动） -->
 <script src="./ocr/tesseract.min.js" onerror="window.__noOCR=true"></script>
@@ -286,200 +296,232 @@ const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1800);}
 function modal(html){$('#modalBody').innerHTML=html;$('#modalMask').classList.add('show');}
+function closeModal(){$('#modalMask').classList.remove('show');}
+window.closeModal=closeModal;
 $('#modalMask').addEventListener('click',e=>{if(e.target.id==='modalMask')$('#modalMask').classList.remove('show');});
 
-/* 标签页切换 */
+/* 主标签切换 */
 $$('.tab').forEach(t=>t.onclick=()=>{
   $$('.tab').forEach(x=>x.classList.remove('active'));
   $$('.page').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
   $('#page-'+t.dataset.tab).classList.add('active');
-  if(t.dataset.tab==='sel')renderFav();
 });
 
-/* ============ 优质评分算法 ============ */
-const CHARS='0123456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // 排除 I、O
-function randSuffix(){let s='';for(let i=0;i<6;i++)s+=CHARS[Math.floor(Math.random()*CHARS.length)];return s;}
-function weights(){return{l:+$('#wLuck').value,r:+$('#wRun').value,p:+$('#wPat').value};}
-function straightBonus(digits){
-  let best=0;
-  for(let len=digits.length;len>=3;len--){
-    for(let s=0;s+len<=digits.length;s++){
-      const sub=digits.substr(s,len);let asc=true,desc=true;
-      for(let k=1;k<sub.length;k++){if(+sub[k]-+sub[k-1]!==1)asc=false;if(+sub[k-1]-+sub[k]!==1)desc=false;}
-      if(asc||desc)best=Math.max(best,(len-2)*3);
-    }
-  }
-  return best;
+/* ============ 车牌格式 & 100分评分 ============ */
+// 车牌格式：粤A·D + 2位字母(号段池) + 3位数字（与黑名单一致）。
+// 若实际想要4位数字，把 DIGITS_LEN 改为 4，并把 BLACKLIST 同步扩成4位即可。
+const LETTER_PAIRS=['PN','PP','PQ','PR','PS','PT'];
+const DIGITS_LEN=3;
+const BLACKLIST=['DPN688','DPN886','DPN669','DPP888','DPS666','DPN123','DPQ999']; // 伪造占用池（D+2字母+3位）
+function genSuffix(){
+  const pair=LETTER_PAIRS[Math.floor(Math.random()*LETTER_PAIRS.length)];
+  let d='';for(let i=0;i<DIGITS_LEN;i++)d+=Math.floor(Math.random()*10);
+  return 'D'+pair+d; // 例：DPN688
 }
-function scorePlate(suffix){
-  const w=weights();const digits=suffix.replace(/[^0-9]/g,'');
-  let luck=0;for(const c of suffix){if('8'.includes(c))luck+=3;else if(c==='6')luck+=2;else if(c==='9')luck+=1.5;else if(c==='0')luck+=0.5;else if(c==='4')luck-=2;}
-  let runScore=0,i=0;
-  while(i<digits.length){let j=i;while(j<digits.length&&digits[j]===digits[i])j++;if(j-i>=2)runScore+=(j-i-1)*2.5;i=j;}
-  const seq=straightBonus(digits);
-  let pat=0;const s=suffix;
-  const tests=[[/^(.)\1(.)\2(.)\3$/,6],[/^(.)(.)\1\2\1\2$/,6],[/^(.)(.)(.)\1\2\3$/,6],[/^(.)\1(.)\2$/,4],[/^(.)(.)\1\2$/,4],[/^(.)\1\1\1\1\1$/,12]];
-  for(const[r,pt]of tests)if(r.test(s))pat+=pt;
-  if(s===s.split('').reverse().join(''))pat+=9;
-  const total=w.l*luck + w.r*(runScore+seq) + w.p*pat;
-  let tier,cls;
-  if(total>=20){tier='极品';cls='b-jipin';}
-  else if(total>=11){tier='优质';cls='b-you';}
-  else if(total>=4.5){tier='普通';cls='b-putong';}
-  else{tier='一般';cls='b-yiban';}
-  return{total:+total.toFixed(1),tier,cls,luck:+luck.toFixed(1),run:+(runScore+seq).toFixed(1),pat:+pat.toFixed(1)};
-}
-function fullPlate(suffix){return '粤AD·'+suffix;}
+function fullPlate(suffix){return '粤A·'+suffix;}
+function badgeCls(score){return score>=90?'sb-gold':score>=70?'sb-blue':score>=60?'sb-gray':'sb-red';}
+function shortTier(score){return score>=90?'极品':score>=70?'优质':score>=60?'普通':'建议换';}
 
-/* 权重显示 */
-['wLuck','wRun','wPat'].forEach(id=>{
-  $('#'+id).oninput=()=>{$('#'+id+'V').textContent=$('#'+id).value;};
+/* 100 分制评分（拍照识号指定规则，选号模拟与拍照识号共用） */
+function score100(suffix){
+  const digits=(suffix.match(/\d/g)||[]).join('');
+  const add=[],sub=[];
+  const hasTriple=/(\d)\1\1/.test(digits);
+  const hasDouble=/(66|88|99)/.test(digits);
+  const hasSeq=/(123|678|789)/.test(digits);
+  const isPalin=digits.length>=2 && digits===digits.split('').reverse().join('');
+  const hasLucky=/(168|520|918)/.test(digits);
+  const has4=digits.includes('4');
+  const has250=digits.includes('250');
+  const hasAnyPattern=hasTriple||hasDouble||hasSeq||isPalin||hasLucky;
+  const hasBad=has4||has250;
+  const base=(!hasAnyPattern&&!hasBad)?40:60; // 乱码基础分40，其余基础60
+  let score=base;
+  if(hasTriple){const m=digits.match(/(\d)\1\1/)[0];score+=50;add.push('豹子号('+m+') +50');}
+  else if(hasDouble){const m=digits.match(/66|88|99/)[0];score+=20;add.push('连号('+m+') +20');}
+  if(hasSeq){const m=digits.match(/123|678|789/)[0];score+=30;add.push('顺子('+m+') +30');}
+  if(isPalin){score+=30;add.push('对称号(回文) +30');}
+  if(hasLucky){const m=digits.match(/168|520|918/)[0];score+=30;add.push('吉利谐音('+m+') +30');}
+  if(has4){score-=20;sub.push('含数字4(谐音"死") -20');}
+  if(has250){score-=30;sub.push('含250 -30');}
+  score=Math.max(0,Math.min(100,score));
+  let tier;
+  if(score>=90)tier='👑 极品靓号，闭眼选！';
+  else if(score>=70)tier='🌟 优质好号，果断拿下';
+  else if(score>=60)tier='👍 普通号，过渡用';
+  else tier='⚠️ 建议换一个';
+  return {score,tier,add,sub,digits};
+}
+
+/* ============ 选号模拟：状态 ============ */
+let rChances=5, curBatch=[], picked=[], altTimer=null, altLeft=180, altSel=-1, altStarted=false;
+let C=store.get('dxw_custom',{left:20,locked:null,log:[],pair:'PN',intents:['','','','','']});
+if(!C.intents||C.intents.length!==5)C.intents=['','','','',''];
+let curDigits='';
+
+/* 子标签切换 */
+$$('#subTabs button').forEach(b=>b.onclick=()=>{
+  const p=b.dataset.p;
+  $$('#subTabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  if(p==='random'){showRandom();}
+  else{showCustom();}
 });
-
-/* ============ 选号模拟：随机 ============ */
-const SKey='dxw_sel';
-let S=store.get(SKey,{round:1,phase:'random',final:null,fav:[]});
-let rTimer=null,rLeft=5;
-
-function genRandomBatch(){
-  const arr=[];for(let i=0;i<10;i++){const suf=randSuffix();arr.push({suf,sc:scorePlate(suf)});}
-  return arr;
+function showRandom(){
+  $('#customBox').style.display='none';
+  $('#startBox').style.display = (rChances<5||curBatch.length)?'none':'block';
+  $('#randomBox').style.display = (curBatch.length||rChances<5)?'block':'none';
+  if($('#randomBox').style.display!=='none')renderRandomGrid();
 }
-let curBatch=[];
-function renderRandom(){
+function showCustom(){
   $('#startBox').style.display='none';
-  $('#randomBox').style.display='block';
-  $('#rRound').textContent=S.round;rLeft=Math.max(0,6-S.round);$('#rLeft').textContent=rLeft;
-  curBatch=genRandomBatch();
+  $('#randomBox').style.display='none';
+  $('#customBox').style.display='block';
+  renderCustom();
+}
+$('#startBtn').onclick=()=>{curBatch=[];rChances=5;picked=[];altStarted=false;altSel=-1;genBatch();$('#startBox').style.display='none';$('#randomBox').style.display='block';};
+
+/* 随机：生成一批（最多5次） */
+function genBatch(){
+  if(rChances<=0){toast('随机机会已用完，请去自编选号');return;}
+  rChances--;
+  const set=new Set();
+  while(set.size<10){
+    const s=genSuffix();
+    if(BLACKLIST.includes(s))continue;
+    set.add(s);
+  }
+  curBatch=[...set];
+  $('#rChances').textContent=rChances;
+  renderRandomGrid();renderAlt();
+}
+$('#rStart').onclick=genBatch;
+$('#rChange').onclick=genBatch;
+$('#rToCustom2').onclick=()=>{$$('#subTabs button').forEach(x=>x.classList.toggle('on',x.dataset.p==='custom'));showCustom();};
+$('#startToCustom').onclick=()=>{$$('#subTabs button').forEach(x=>x.classList.toggle('on',x.dataset.p==='custom'));showCustom();};
+
+function renderRandomGrid(){
   const g=$('#randomGrid');g.innerHTML='';
-  curBatch.forEach((it,idx)=>{
-    const d=document.createElement('div');d.className='plate-card'+(it.sc.total>=11?' best':'');
-    d.innerHTML=`<div><div class="plate plate-num">${fullPlate(it.suf)}</div><div class="score">分${it.sc.total} · ${it.sc.tier}</div></div>
-      <button class="mini-btn" data-i="${idx}">选</button>`;
-    d.querySelector('button').onclick=()=>pickRandom(idx);
+  curBatch.forEach((suf)=>{
+    const sc=score100(suf);
+    const inPicked=picked.includes(suf);
+    const full=picked.length>=5;
+    const d=document.createElement('div');d.className='dcard';
+    d.innerHTML=`
+      <div class="plate-big"><span class="prov">粤A</span>${suf}</div>
+      <div class="row between">
+        <span class="score-badge ${badgeCls(sc.score)}">${sc.score}分 · ${shortTier(sc.score)}</span>
+        <button class="mini-btn jp" ${(inPicked||full)?'disabled':''}>${inPicked?'已选':'加入备选'}</button>
+      </div>`;
+    d.querySelector('button').onclick=()=>addPicked(suf);
     g.appendChild(d);
   });
-  startTimer();
 }
-function startTimer(){
-  clearInterval(rTimer);let t=180;$('#rTimer').textContent=t;
-  rTimer=setInterval(()=>{t--;$('#rTimer').textContent=t;if(t<=0){clearInterval(rTimer);toast('本批超时，自动进入下一批');skipRound(true);}},1000);
+function addPicked(suf){
+  if(picked.includes(suf)){toast('已在备选区');return;}
+  if(picked.length>=5){toast('备选区已满（最多5个）');return;}
+  picked.push(suf);
+  if(!altStarted){altStarted=true;startAltTimer();}
+  renderRandomGrid();renderAlt();
 }
-function bestOfBatch(){let bi=0;curBatch.forEach((it,i)=>{if(it.sc.total>curBatch[bi].sc.total)bi=i;});return bi;}
-function pickRandom(i){clearInterval(rTimer);const it=curBatch[i];S.final={suf:it.suf,phase:'random'};store.set(SKey,S);showFinal();modal(`<h3>已选定号牌</h3><div class="plate-num" style="font-size:22px;color:var(--red);margin:10px 0">${fullPlate(it.suf)}</div><div>优质度：${it.sc.tier}（${it.sc.total}分）</div><button class="btn" style="margin-top:14px" onclick="closeModal()">好的</button>`);}
-function closeModal(){$('#modalMask').classList.remove('show');}
-window.closeModal=closeModal;
-$('#rPickBest').onclick=()=>{const bi=bestOfBatch();pickRandom(bi);};
-$('#rSkip').onclick=()=>skipRound(false);
-function skipRound(auto){
-  clearInterval(rTimer);
-  if(S.round>=5){toast('随机机会已用完，进入自编');gotoCustom();return;}
-  S.round++;store.set(SKey,S);renderRandom();
-  if(auto)toast('已进入第'+S.round+'批');
-}
-$('#rToCustom').onclick=()=>gotoCustom();
-function gotoCustom(){
-  clearInterval(rTimer);S.phase='custom';store.set(SKey,S);
-  $('#startBox').style.display='none';$('#randomBox').style.display='none';$('#customBox').style.display='block';
-  $$('#phaseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.phase==='custom'));
-  renderCustom();
-}
-$$('#phaseSeg button').forEach(b=>b.onclick=()=>{
-  const p=b.dataset.phase;
-  $$('#phaseSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-  if(p==='random'){$('#randomBox').style.display='block';$('#customBox').style.display='none';S.phase='random';store.set(SKey,S);renderRandom();}
-  else gotoCustom();
-});
-
-/* 选号模拟：自编 */
-let C=store.get('dxw_custom',{left:20,locked:null,log:[],intents:['','','','','']});
-if(!C.intents)C.intents=['','','','',''];
-let activeRow=0,activeCol=0;
-const KB=CHARS;
-function renderCustom(){
-  $('#cLeft').textContent=C.left;$('#cLocked').textContent=C.locked?fullPlate(C.locked):'—';
-  const tabs=$('#intentTabs');tabs.innerHTML='';
-  C.intents.forEach((s,i)=>{
-    const b=document.createElement('button');b.className='intent-tab'+(i===activeRow?' on':'')+(s?' filled':'');
-    b.textContent='意向'+(i+1)+(s?'：'+s:'');
-    b.onclick=()=>{activeRow=i;activeCol=Math.min(activeCol,(C.intents[i]||'').length);renderCustom();};
-    tabs.appendChild(b);
+function renderAlt(){
+  const box=$('#altList');
+  if(!picked.length){box.className='muted';box.textContent='尚未加入备选';return;}
+  box.className='';box.innerHTML='';
+  picked.forEach((suf,i)=>{
+    const row=document.createElement('div');row.className='slot'+(i===altSel?' ':'');
+    row.style.borderColor=(i===altSel)?'var(--blue)':'var(--line)';
+    row.innerHTML=`<div><span class="plate-big" style="font-size:16px;padding:6px 8px"><span class="prov">粤A</span>${suf}</span></div>
+      <div class="row"><button class="mini-btn ${i===altSel?'on':''}" data-i="${i}">${i===altSel?'已选':'选这个'}</button><button class="x" data-x="${i}">✕</button></div>`;
+    row.querySelector('[data-i]').onclick=()=>{altSel=i;renderAlt();};
+    row.querySelector('[data-x]').onclick=()=>{picked.splice(+row.querySelector('[data-x]').dataset.x,1);if(altSel>=picked.length)altSel=picked.length-1;renderRandomGrid();renderAlt();};
+    box.appendChild(row);
   });
-  const row=$('#slotRow');row.innerHTML='';
-  const s=C.intents[activeRow]||'';
-  for(let j=0;j<6;j++){const d=document.createElement('div');d.className='slot'+(j===activeCol?' active':'')+(s[j]?' filled':'');d.textContent=s[j]||'';d.onclick=()=>{activeCol=j;renderCustom();};row.appendChild(d);}
-  const kb=$('#kb');kb.innerHTML='';
-  KB.split('').forEach(c=>{const b=document.createElement('button');b.className='kb-key';b.textContent=c;b.onclick=()=>typeChar(c);kb.appendChild(b);});
-  const del=document.createElement('button');del.className='kb-key kb-fn';del.textContent='⌫';del.onclick=typeDel;kb.appendChild(del);
-  const clr=document.createElement('button');clr.className='kb-key kb-fn';clr.textContent='清除';clr.onclick=typeClear;kb.appendChild(clr);
-  $('#cLog').innerHTML=C.log.length?C.log.map(l=>`<div class="fav-item"><span class="plate">${fullPlate(l.suf)}</span><span class="badge ${l.ok?'b-you':'b-yiban'}">${l.ok?'可用·已锁':'已占用'}</span></div>`).join(''):'<div class="muted">暂无记录</div>';
 }
-function typeChar(c){
-  let s=C.intents[activeRow]||'';
-  if(s.length>=6)return;
-  const arr=s.split('');
-  if(activeCol>=arr.length)arr.push(c);else arr.splice(activeCol,0,c);
-  C.intents[activeRow]=arr.join('').slice(0,6);
-  activeCol=Math.min(6,activeCol+1);
-  store.set('dxw_custom',C);renderCustom();
+function startAltTimer(){
+  clearInterval(altTimer);altLeft=180;$('#altTimer').textContent=altLeft;
+  altTimer=setInterval(()=>{
+    altLeft--;$('#altTimer').textContent=altLeft;
+    if(altLeft<=0){clearInterval(altTimer);altTimer=null;$('#altTimer').textContent='已超时';$('#rConfirm').disabled=true;toast('备选超时，请重新加入');}
+  },1000);
 }
-function typeDel(){
-  let s=C.intents[activeRow]||'';
-  if(!s.length){activeCol=0;return;}
-  const arr=s.split('');
-  if(activeCol>=arr.length){arr.pop();activeCol=Math.max(0,arr.length-1);}
-  else{arr.splice(activeCol,1);}
-  C.intents[activeRow]=arr.join('');
-  store.set('dxw_custom',C);renderCustom();
+$('#rConfirm').onclick=()=>{
+  if(altSel<0){toast('请先在备选区选择一个号');return;}
+  showWin(picked[altSel]);
+};
+
+/* 自编选号 */
+function renderNumpad(){
+  const np=$('#np');np.innerHTML='';
+  '0123456789'.split('').forEach(c=>{const b=document.createElement('button');b.textContent=c;b.onclick=()=>npKey(c);np.appendChild(b);});
+  const del=document.createElement('button');del.className='del';del.textContent='⌫ 删除';del.onclick=npDel;np.appendChild(del);
 }
-function typeClear(){C.intents[activeRow]='';activeCol=0;store.set('dxw_custom',C);renderCustom();}
-$('#cSubmit').onclick=()=>{
+function npKey(c){if(curDigits.length>=DIGITS_LEN)return;curDigits+=c;renderCustomPreview();}
+function npDel(){curDigits=curDigits.slice(0,-1);renderCustomPreview();}
+function renderCustomPreview(){
+  const pair=$('#pairSel').value;
+  $('#customPreview').innerHTML='<span class="prov">粤A</span>D·'+pair+curDigits.padEnd(DIGITS_LEN,'_');
+}
+$('#pairSel').onchange=()=>{C.pair=$('#pairSel').value;store.set('dxw_custom',C);renderCustomPreview();};
+renderNumpad();
+$('#clearIntent').onclick=()=>{curDigits='';renderCustomPreview();};
+$('#addIntent').onclick=()=>{
+  if(curDigits.length!==DIGITS_LEN){toast('请输入 '+DIGITS_LEN+' 位数字');return;}
+  if(C.locked){toast('已锁定，重新模拟后可再编');return;}
+  const suf='D'+$('#pairSel').value+curDigits;
+  const empty=C.intents.indexOf('');
+  if(empty<0){toast('意向槽位已满（5 个），可删除后重填');return;}
+  C.intents[empty]=suf;curDigits='';renderCustomPreview();store.set('dxw_custom',C);renderIntentSlots();toast('已加入意向 '+(empty+1));
+};
+function renderIntentSlots(){
+  $('#cLeft').textContent=C.left;
+  const box=$('#intentSlots');box.innerHTML='';
+  C.intents.forEach((suf,i)=>{
+    const row=document.createElement('div');row.className='slot'+(suf?'':' empty');
+    if(suf){
+      const sc=score100(suf);
+      row.innerHTML=`<div><span class="plate-big" style="font-size:16px;padding:6px 8px"><span class="prov">粤A</span>${suf}</span> <span class="score-badge ${badgeCls(sc.score)}">${sc.score}</span></div>
+        <button class="x" data-i="${i}">✕ 删除</button>`;
+      row.querySelector('.x').onclick=()=>{C.intents[i]='';store.set('dxw_custom',C);renderIntentSlots();};
+    }else{
+      row.innerHTML=`<div>意向 ${i+1}（空）</div><div></div>`;
+    }
+    box.appendChild(row);
+  });
+}
+$('#cValidate').onclick=()=>{
+  if(C.locked){toast('已锁定');return;}
   if(C.left<=0){toast('自编机会已用完');return;}
-  const filled=C.intents.map(s=>(s||'').trim().toUpperCase()).filter(s=>s.length>0);
-  if(!filled.length){toast('请先输入至少一个号码');return;}
-  const bad=[];
-  C.intents.forEach((s,i)=>{const v=(s||'');if(v&&v.length<6)bad.push('意向'+(i+1)+'未满6位');if(v&&!/[0-9]/.test(v))bad.push('意向'+(i+1)+'须含至少1位数字');});
-  if(bad.length){$('#cResult').innerHTML='<span class="pill red">'+bad.join('；')+'</span>';toast('格式不合规：'+bad[0]);return;}
-  let locked=null,occupied=[];
-  filled.forEach(v=>{
-    const avail=Math.random()>0.55; // 模拟查重：约45%概率可用
-    if(avail&&!locked){locked=v;C.log.unshift({suf:v,ok:true});}
-    else{C.log.unshift({suf:v,ok:false});occupied.push(fullPlate(v));}
-  });
-  C.left--;
-  if(locked){C.locked=locked;S.final={suf:locked,phase:'custom'};store.set(SKey,S);}
-  store.set('dxw_custom',C);
-  $('#cResult').innerHTML=locked?`<span class="pill green">🎉 锁定 ${fullPlate(locked)}（${scorePlate(locked).tier}）</span>`:`<span class="pill red">本批全部被占用，消耗1次机会</span>`+(occupied.length?`<div class="muted" style="margin-top:4px">已占用：${occupied.join('、')}</div>`:'');
-  renderCustom();
+  let any=false,won=false,wonSuf=null;
+  for(let i=0;i<5;i++){
+    const suf=C.intents[i];if(!suf)continue;
+    if(C.left<=0){toast('次数已用完，无法继续验证');break;}
+    any=true;C.left--; // 每验证一个号码扣1次（无论成功/占用）
+    if(BLACKLIST.includes(suf)){
+      C.log.unshift({suf,ok:false});
+      toast('意向'+(i+1)+' '+fullPlate(suf)+' 已被占用');
+      continue;
+    }else{
+      C.locked=suf;won=true;wonSuf=suf;
+      C.log.unshift({suf,ok:true});
+      break;
+    }
+  }
+  if(!any){toast('请先加入意向号牌');return;}
+  store.set('dxw_custom',C);renderIntentSlots();
+  if(won){showWin(wonSuf);}
+  else{$('#cResult').innerHTML='<span class="pill red">本批意向全部被占用，已消耗自编次数</span>';}
 };
-$('#cRand').onclick=()=>{C.intents[activeRow]=randSuffix();activeCol=6;store.set('dxw_custom',C);renderCustom();toast('已随机填入 意向'+(activeRow+1));};
+function renderCustom(){$('#pairSel').value=C.pair;renderCustomPreview();renderIntentSlots();}
 
-/* 结果/收藏 */
-function showFinal(){$('#finalPlate').textContent=S.final?fullPlate(S.final.suf)+'（'+scorePlate(S.final.suf).tier+'）':'尚未选定号牌';}
-function renderFav(){
-  $('#favList').innerHTML=S.fav.length?S.fav.map((f,i)=>`<div class="fav-item"><span class="plate">${fullPlate(f)} <span class="badge ${scorePlate(f).cls}">${scorePlate(f).tier}</span></span><button class="mini-btn" data-i="${i}">删</button></div>`).join(''):'<div class="muted">暂无收藏</div>';
-  $$('#favList .mini-btn').forEach(b=>b.onclick=()=>{S.fav.splice(+b.dataset.i,1);store.set(SKey,S);renderFav();});
+/* 成功遮罩 */
+function showWin(suffix){
+  $('#winPlate').innerHTML='<span class="prov">粤A</span>'+suffix;
+  const sc=score100(suffix);
+  $('#winTier').textContent=sc.tier+'（'+sc.score+'分）· '+fullPlate(suffix);
+  $('#winMask').classList.add('show');
 }
-$('#saveFav').onclick=()=>{
-  const cand=S.final?S.final.suf:'';
-  if(!cand){toast('先选定或自编一个号再收藏');return;}
-  if(!S.fav.includes(cand)){S.fav.push(cand);store.set(SKey,S);toast('已收藏 '+fullPlate(cand));}
-  renderFav();
-};
-$('#clearFav').onclick=()=>{S.fav=[];store.set(SKey,S);renderFav();toast('已清空');};
-
-/* 初始化选号页：random 阶段先展示「开始选号」引导，不自动出号；custom 阶段直接续上 */
-if(S.phase==='custom'){gotoCustom();}
-showFinal();renderFav();
-
-/* 开始选号引导按钮 */
-$('#startBtn').onclick=()=>{
-  S.round=1;S.phase='random';S.final=null;store.set(SKey,S);
-  $$('#phaseSeg button').forEach(b=>b.classList.toggle('on',b.dataset.phase==='random'));
-  renderRandom();
-};
-$('#startToCustom').onclick=()=>{gotoCustom();};
+$('#winAgain').onclick=()=>location.reload();
 
 /* ============ 拍照识号 ============ */
 let capturedImg=null;
@@ -487,7 +529,7 @@ const ocrRows=Array.from({length:10},()=>'');
 function renderOcrGrid(){
   const g=$('#ocrGrid');g.innerHTML='';
   ocrRows.forEach((v,i)=>{
-    const d=document.createElement('div');d.className='plate-card';
+    const d=document.createElement('div');d.className='dcard';
     d.innerHTML=`<input value="${v}" data-i="${i}" placeholder="号${i+1}" style="font-family:monospace;font-weight:700" maxlength="6">`;
     d.querySelector('input').oninput=e=>{ocrRows[i]=e.target.value.toUpperCase();};
     g.appendChild(d);
@@ -503,13 +545,12 @@ $('#capInput').onchange=e=>{
 const isFile=(location.protocol==='file:');
 $('#doOcr').onclick=async()=>{
   if(!capturedImg){toast('请先拍照/选择图片');return;}
-  if(isFile){$('#ocrStatus').textContent='⚠️ 当前为 file:// 打开，浏览器禁止本地识别引擎运行，已降级为手动录入。请用本地服务器打开以启用自动识别（见上方说明）。';toast('file方式无法自动识别');return;}
+  if(isFile){$('#ocrStatus').textContent='⚠️ 当前为 file:// 打开，浏览器禁止本地识别引擎运行，已降级为手动录入。请用本地服务器/云端打开以启用自动识别（见上方说明）。';toast('file方式无法自动识别');return;}
   if(window.__noOCR||!window.Tesseract){$('#ocrStatus').textContent='未检测到本地 OCR 资源（ocr/tesseract.min.js），已自动降级为手动录入，请直接在上方 10 格中校正号码。';toast('无OCR资源，手动录入');return;}
   $('#ocrStatus').textContent='识别中（本地运算，请稍候）…';
   try{
     const worker=await Tesseract.createWorker({workerPath:'./ocr/worker.min.js',corePath:'./ocr/tesseract-core.wasm.js',langPath:'./ocr/',logger:m=>{if(m.status==='recognizing text')$('#ocrStatus').textContent='识别中…'+Math.round(m.progress*100)+'%';}});
     await worker.load();await worker.loadLanguage('eng');await worker.initialize('eng');
-    // 预处理：灰度+二值化+放大
     const cv=await preprocess(capturedImg);
     const {data:{text}}=await worker.recognize(cv);
     await worker.terminate();
@@ -542,16 +583,24 @@ function parsePlates(text){
 $('#scoreOcr').onclick=()=>{
   const items=ocrRows.map(r=>r.trim().toUpperCase()).filter(r=>r.length>=5);
   if(!items.length){toast('请先填入号码');return;}
-  const scored=items.map(suf=>({suf,sc:scorePlate(suf)})).sort((a,b)=>b.sc.total-a.sc.total);
+  const scored=items.map(suf=>({suf,sc:score100(suf)})).sort((a,b)=>b.sc.score-a.sc.score);
   const box=$('#ocrResult');box.innerHTML='';
   scored.forEach((it,i)=>{
-    const d=document.createElement('div');d.className='plate-card'+(i===0?' best':'');
-    d.innerHTML=`<div><div class="plate plate-num">${i===0?'🥇 ':''}${fullPlate(it.suf)}</div><div class="score">分${it.sc.total} · ${it.sc.tier}</div></div>
-      <button class="mini-btn" data-s="${it.suf}">收藏</button>`;
-    d.querySelector('button').onclick=()=>{if(!S.fav.includes(it.suf)){S.fav.push(it.suf);store.set(SKey,S);toast('已收藏');}};
+    const sc=it.sc;
+    const d=document.createElement('div');d.className='dcard';
+    d.innerHTML=`
+      <div class="plate-big"><span class="prov">粤A</span>${it.suf}</div>
+      <div class="row between">
+        <span class="score-badge ${badgeCls(sc.score)}">${sc.score}分</span>
+        <span class="muted" style="font-size:12px">${i===0?'🥇 ':''}${sc.tier}</span>
+      </div>
+      <div>
+        <div class="bar"><i style="width:${sc.score}%"></i></div>
+        <div class="reasons">${sc.add.length?'<span class="pill green">'+sc.add.join('</span> <span class="pill green">')+'</span>':''}${sc.sub.length?'<span class="pill red">'+sc.sub.join('</span> <span class="pill red">')+'</span>':''}${!sc.add.length&&!sc.sub.length?'<span class="pill">无特殊规律（基础分）</span>':''}</div>
+      </div>`;
     box.appendChild(d);
   });
-  toast('已按优质度排序');
+  toast('已按评分排序');
 };
 
 /* ============ 验车帮手 ============ */
@@ -665,7 +714,6 @@ function renderIns(){
     });
     wrap.appendChild(card);
   });
-  // 开关清单
   const sw=$('#switchList');sw.innerHTML='';
   switches.forEach(s=>{
     const st=INS.switches[s.id]||false;
@@ -678,7 +726,6 @@ function renderIns(){
 window.saveNote=id=>{INS.items[id]=INS.items[id]||{};INS.items[id].note=$('#nt').value;saveIns();closeModal();toast('已保存备注');};
 window.savePhoto=id=>{
   if(!window._phData){toast('请先选择照片');return;}
-  // 压缩缩略图以控制 localStorage 体积
   const img=new Image();img.onload=()=>{
     const c=document.createElement('canvas');const max=360;const sc=Math.min(1,max/img.width);c.width=img.width*sc;c.height=img.height*sc;c.getContext('2d').drawImage(img,0,0,c.width,c.height);
     let data;try{data=c.toDataURL('image/jpeg',0.5);}catch(e){data=window._phData;}
@@ -705,7 +752,6 @@ $('#insExport').onclick=()=>{
 function ym(v){if(!v)return null;const[y,m]=v.split('-');return new Date(+y,+m-1,1);}
 function mi(d){return d.getFullYear()*12+d.getMonth();}
 function fmtYM(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月';}
-/* 轮胎 DOT 末尾4位：WWYY（周/年） */
 function parseDot(str){
   if(!str)return null;
   const s=(''+str).replace(/[^0-9]/g,'').slice(-4);
@@ -715,7 +761,6 @@ function parseDot(str){
   let fy=2000+yr;const now=new Date();while(fy>now.getFullYear())fy-=10;
   return {date:new Date(fy,0,1+(wk-1)*7),monthKnown:true};
 }
-/* 玻璃角标：数字=年份尾数；点在数字前=上半年(月=7-点数)，点在后=下半年(月=13-点数) */
 function parseGlass(str){
   if(!str)return null;
   const norm=(''+str).replace(/·/g,'.');
@@ -770,9 +815,9 @@ function updateRisk(){
   box.innerHTML=risks.map(r=>`<div class="risk ${r[0]==='ok'?'ok':'warn'}">${r[0]==='ok'?'✅':'⚠️'} ${r[1]}</div>`).join('');
 }
 ['kPick','kVeh','kMile','kBat','kTire1','kTire2','kTire3','kTire4','kGlass1','kGlass2','kGlass3','kGlass4'].forEach(id=>{$('#'+id).onchange=updateRisk;$('#'+id).oninput=updateRisk;});
-renderIns();updateRisk();
 
-/* 提示 OCR 资源状态 */
+/* 初始化 */
+renderIns();updateRisk();
 if(window.__noOCR){$('#ocrStatus').textContent='提示：当前未检测到本地 OCR 资源（需 ocr/ 目录下的 tesseract 文件）。可手动录入，或把 OCR 资源放入同目录 ocr/ 后刷新启用自动识别。';}
 else if(isFile){$('#ocrStatus').textContent='⚠️ 你正以 file:// 方式打开，浏览器禁止本地识别引擎运行，自动识别不可用（已可手动录入）。如需自动识别，请在文件目录运行：python -m http.server 8000，再访问 http://localhost:8000/选号验车工具.html';}
 </script>
